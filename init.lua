@@ -53,7 +53,7 @@ hs.hotkey.bind({'cmd'}, '/', function ()
   front_w:moveToScreen(front_w:screen():next(), 0)
 end)
 
-last_press = {}
+last_press = nil
 en_type = hs.eventtap.event.types
 event = hs.eventtap.new({ en_type.flagsChanged, en_type.middleMouseDown, en_type.scrollWheel, en_type.keyDown, en_type.keyUp }, function(event)
   local eventType = en_type[event:getType()]
@@ -92,12 +92,12 @@ event = hs.eventtap.new({ en_type.flagsChanged, en_type.middleMouseDown, en_type
       end
     end
 
-    if hs.keycodes.map[event:getKeyCode()] == last_press[2] then
+    if last_press and hs.keycodes.map[event:getKeyCode()] == last_press[1][2] then
       if eventType == 'keyDown' then
-        return true, {down({}, last_press[4]):setFlags(last_press[5])}
+        return true, {down({}, last_press[1][4]):setFlags(last_press[2])}
       else
-        local evt = up({}, last_press[4]):setFlags(last_press[5])
-        last_press = {}
+        local evt = up({}, last_press[1][4]):setFlags(last_press[2])
+        last_press = nil
         return true, {evt}
       end
     end
@@ -115,8 +115,7 @@ event = hs.eventtap.new({ en_type.flagsChanged, en_type.middleMouseDown, en_type
           en_flag[md] = true
         end
         if eventType == 'keyDown' then
-          last_press = value
-          table.insert(last_press, en_flag)
+          last_press = {value, en_flag}
           return true, {down({}, value[4]):setFlags(en_flag)}
         else
           return true, {up({}, value[4]):setFlags(en_flag)}
