@@ -40,6 +40,7 @@ keymap = {
   {{'alt'}, '.', {}, '.'},
   {{'alt'}, '7', {}, '/'},
   {{'alt'}, '8', {'shift'}, '8'},
+  {{'alt'}, 'b', {}, 'delete'},
 }
 
 hs.hotkey.bind({'cmd'}, ',', function ()
