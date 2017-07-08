@@ -136,3 +136,31 @@ event = hs.eventtap.new({ en_type.flagsChanged, en_type.middleMouseDown, en_type
   
   return false
 end):start()
+
+-- Window event listen
+events = hs.uielement.watcher
+
+function handleGlobalAppEvent(name, event, app)
+  if event == hs.application.watcher.launched then
+    local watcher = app:newWatcher(win_open)
+    watcher:start({events.windowCreated})
+    for i, window in pairs(app:allWindows()) do
+      win_open(window)
+    end
+  end
+end
+
+function win_open(element)
+  if element:frame() == element:screen():frame() then
+    local f_scr = element:screen():fullFrame()
+    element:setTopLeft(f_scr):setSize(f_scr)
+  end
+end
+
+apps = hs.application.runningApplications()
+for i = 1, #apps do
+  local watcher = apps[i]:newWatcher(win_open)
+  watcher:start({events.windowCreated})
+end
+
+app_event = hs.application.watcher.new(handleGlobalAppEvent):start()
