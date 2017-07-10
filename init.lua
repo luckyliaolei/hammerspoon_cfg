@@ -64,6 +64,7 @@ hs.hotkey.bind({'cmd'}, '/', function ()
 end)
 
 last_press = nil
+app_press = false
 en_type = hs.eventtap.event.types
 event = hs.eventtap.new({ en_type.flagsChanged, en_type.middleMouseDown, en_type.scrollWheel, en_type.keyDown, en_type.keyUp }, function(event)
   local eventType = en_type[event:getType()]
@@ -96,10 +97,14 @@ event = hs.eventtap.new({ en_type.flagsChanged, en_type.middleMouseDown, en_type
   if eventType == 'keyDown' or eventType == 'keyUp' then
     if event:getKeyCode() == 110 then
       if eventType == 'keyDown' then
-        return true, {down({}, 'escape')}
+        app_press = true
       else
-        return true, {up({}, 'escape')}
+        app_press = false
       end
+      return true
+    end
+    if app_press then
+      event:setFlags({cmd=true})
     end
 
     if last_press and hs.keycodes.map[event:getKeyCode()] == last_press[1][2] then
@@ -151,7 +156,7 @@ function handleGlobalAppEvent(name, event, app)
 end
 
 function win_open(element)
-  if element:frame() == element:screen():frame() then
+  if element._frame and element:frame() == element:screen():frame() then
     local f_scr = element:screen():fullFrame()
     element:setTopLeft(f_scr):setSize(f_scr)
   end
