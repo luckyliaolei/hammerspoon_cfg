@@ -64,6 +64,7 @@ hs.hotkey.bind({'cmd'}, '/', function ()
   local front_w = hs.window.frontmostWindow()
   local n_scr = front_w:screen():next():fullFrame()
   front_w:setTopLeft(n_scr):setSize(n_scr)
+  hs.mouse.setAbsolutePosition(n_scr.center)
 end)
 
 last_press = nil
