@@ -62,7 +62,8 @@ hs.hotkey.bind({'cmd'}, '.', function ()
 end)
 hs.hotkey.bind({'cmd'}, '/', function ()
   local front_w = hs.window.frontmostWindow()
-  front_w:moveToScreen(front_w:screen():next(), 0)
+  local n_scr = front_w:screen():next():fullFrame()
+  front_w:setTopLeft(n_scr):setSize(n_scr)
 end)
 
 last_press = nil
