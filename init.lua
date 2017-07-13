@@ -6,8 +6,8 @@ keymap = {
   {{}, 'f13', {'cmd', 'shift'}, '['},
   {{}, 'f14', {'cmd', 'shift'}, ']'},
   {{}, 'f15', {'cmd'}, 'w'},
-  {{'cmd'}, 'home', {}, 'home'},
-  {{'cmd'}, 'end', {}, 'end'},
+  {{'cmd'}, 'home', {'cmd'}, 'up'},
+  {{'cmd'}, 'end', {'cmd'}, 'down'},
   {{}, 'home', {'cmd'}, 'left'},
   {{}, 'end', {'cmd'}, 'right'},
 
@@ -23,8 +23,8 @@ keymap = {
   {{'ctrl'}, 'o', {'cmd', 'shift'}, ']'},
   {{'ctrl'}, 'p', {'cmd'}, 'w'},
   
-  {{'cmd', 'ctrl'}, 'k', {}, 'home'},
-  {{'cmd', 'ctrl'}, ',', {}, 'end'},
+  {{'cmd', 'ctrl'}, 'k', {'cmd'}, 'up'},
+  {{'cmd', 'ctrl'}, ',', {'cmd'}, 'down'},
   {{'ctrl'}, 'k', {'cmd'}, 'left'},
   {{'ctrl'}, ',', {'cmd'}, 'right'},
 
