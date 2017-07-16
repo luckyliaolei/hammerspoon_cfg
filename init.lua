@@ -82,7 +82,14 @@ event = hs.eventtap.new({ en_type.flagsChanged, en_type.middleMouseDown, en_type
   end
 
   if eventType == 'middleMouseDown' then
-    return true, {down({'ctrl'}, 'up'), up({'ctrl'}, 'up')}
+    local button_num = event:getRawEventData().NSEventData.buttonNumber
+    if button_num == 3 then
+      return true, {down({'ctrl'}, 'right'), up({'ctrl'}, 'right')}
+    elseif button_num == 4 then
+      return true, {down({'ctrl'}, 'left'), up({'ctrl'}, 'left')}
+    else
+      return true, {down({'ctrl'}, 'up'), up({'ctrl'}, 'up')}
+    end
   end
 
   if eventType == 'scrollWheel' then
