@@ -70,7 +70,7 @@ end)
 last_press = nil
 app_press = false
 en_type = hs.eventtap.event.types
-event = hs.eventtap.new({ en_type.flagsChanged, en_type.middleMouseDown, en_type.scrollWheel, en_type.keyDown, en_type.keyUp }, function(event)
+event = hs.eventtap.new({ en_type.flagsChanged, en_type.otherMouseDown, en_type.scrollWheel, en_type.keyDown, en_type.keyUp }, function(event)
   local eventType = en_type[event:getType()]
 
   if eventType == 'flagsChanged' then
@@ -81,7 +81,7 @@ event = hs.eventtap.new({ en_type.flagsChanged, en_type.middleMouseDown, en_type
     end
   end
 
-  if eventType == 'middleMouseDown' then
+  if eventType == 'otherMouseDown' then
     local button_num = event:getRawEventData().NSEventData.buttonNumber
     if button_num == 3 then
       return true, {down({'ctrl'}, 'right'), up({'ctrl'}, 'right')}
