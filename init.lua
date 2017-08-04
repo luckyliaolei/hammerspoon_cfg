@@ -68,9 +68,10 @@ hs.hotkey.bind({'cmd'}, '/', function ()
 end)
 hs.hotkey.bind({'ctrl'}, '\'', function ()
   local c_scr = hs.mouse.getCurrentScreen()
-  local n_scr = c_scr:next():fullFrame()
-  hs.mouse.setAbsolutePosition(n_scr.center)
-  hs.eventtap.leftClick(n_scr.center)
+  local n_scr = c_scr:next()
+  hs.mouse.setAbsolutePosition(n_scr:fullFrame().center)
+  -- hs.eventtap.leftClick(n_scr.center)
+  hs.inspect(hs.window.filter.new():setScreens(n_scr:id()):getWindows()[1]:focus())
 end)
 
 last_press = nil
