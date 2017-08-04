@@ -66,6 +66,12 @@ hs.hotkey.bind({'cmd'}, '/', function ()
   front_w:setTopLeft(n_scr):setSize(n_scr)
   hs.mouse.setAbsolutePosition(n_scr.center)
 end)
+hs.hotkey.bind({'ctrl'}, '\'', function ()
+  local c_scr = hs.mouse.getCurrentScreen()
+  local n_scr = c_scr:next():fullFrame()
+  hs.mouse.setAbsolutePosition(n_scr.center)
+  hs.eventtap.leftClick(n_scr.center)
+end)
 
 last_press = nil
 app_press = false
