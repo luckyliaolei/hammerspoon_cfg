@@ -69,10 +69,20 @@ end)
 hs.window.filter.setLogLevel(1)
 hs.hotkey.bind({'ctrl'}, '\'', function ()
   local c_scr = hs.mouse.getCurrentScreen()
+  local front_w = hs.window.filter.new():setScreens(c_scr:id()):getWindows()[1]
+  if front_w then
+    front_w:focus()
+  end
+end)
+hs.hotkey.bind({'cmd', 'ctrl'}, '\'', function ()
+  local c_scr = hs.mouse.getCurrentScreen()
   local n_scr = c_scr:next()
   hs.mouse.setAbsolutePosition(n_scr:fullFrame().center)
   -- hs.eventtap.leftClick(n_scr.center)
-  hs.inspect(hs.window.filter.new():setScreens(n_scr:id()):getWindows()[1]:focus())
+  local front_w = hs.window.filter.new():setScreens(n_scr:id()):getWindows()[1]
+  if front_w then
+    front_w:focus()
+  end
 end)
 
 last_press = nil
