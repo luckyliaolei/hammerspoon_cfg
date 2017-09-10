@@ -53,7 +53,7 @@ hs.hotkey.bind({'cmd'}, ',', function ()
   hs.window.frontmostWindow():toggleFullScreen()
 end)
 hs.hotkey.bind({'cmd'}, '.', function ()
-    local f_scr = hs.window.frontmostWindow():screen():fullFrame()
+  local f_scr = hs.window.frontmostWindow():screen():fullFrame()
   if hs.window.frontmostWindow():frame().x == f_scr.x then
     hs.window.frontmostWindow():move({0.1, 0.05, 0.8, 0.8}, 0)
   else
@@ -68,12 +68,14 @@ hs.hotkey.bind({'cmd'}, '/', function ()
 end)
 hs.window.filter.setLogLevel(1)
 hs.hotkey.bind({'ctrl'}, 'tab', function ()
-  local front_app_name = hs.window.frontmostWindow():application():name()
+  local front_app_name = hs.application.frontmostApplication():name()
   local front_w = hs.window.filter.new(false):setAppFilter(front_app_name, {}):getWindows(hs.window.filter.sortByFocused)[1]
-  if front_w:isVisible() then
-    front_w:focus()
-  else
-    front_w:unminimize()
+  if front_w then
+    if front_w:isVisible() then
+      front_w:focus()
+    else
+      front_w:unminimize()
+    end
   end
 end)
 hs.hotkey.bind({'ctrl'}, '\'', function ()
