@@ -67,6 +67,15 @@ hs.hotkey.bind({'cmd'}, '/', function ()
   hs.mouse.setAbsolutePosition(n_scr.center)
 end)
 hs.window.filter.setLogLevel(1)
+hs.hotkey.bind({'ctrl'}, 'tab', function ()
+  local front_app_name = hs.window.frontmostWindow():application():name()
+  local front_w = hs.window.filter.new(false):setAppFilter(front_app_name, {}):getWindows(hs.window.filter.sortByFocused)[1]
+  if front_w:isVisible() then
+    front_w:focus()
+  else
+    front_w:unminimize()
+  end
+end)
 hs.hotkey.bind({'ctrl'}, '\'', function ()
   local c_scr = hs.mouse.getCurrentScreen()
   local front_w = hs.window.filter.new():setScreens(c_scr:id()):getWindows()[1]
@@ -152,6 +161,10 @@ event = hs.eventtap.new({ en_type.flagsChanged, en_type.otherMouseDown, en_type.
       for key, md in pairs(value[1]) do      
         match_md = match_md and en_flag[md]
         en_flag[md] = false
+      end
+      flags = event:getRawEventData().NSEventData.modifierFlags
+      if (flags << 63 >> 63) == 1 and (flags << 50 >> 63) == 1 then
+        en_flag['ctrl'] = true
       end
       local match_key = hs.keycodes.map[event:getKeyCode()] == value[2]
       if match_md and match_key then
