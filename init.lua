@@ -3,6 +3,8 @@ function up(mods, key) return hs.eventtap.event.newKeyEvent(mods, key, false) en
 
 keymap = {
   {{}, 'help', {}, 'return'},
+  {{'cmd'}, 'f13', {'cmd', 'ctrl'}, 'i'},
+  {{'cmd'}, 'f14', {'cmd', 'ctrl'}, 'o'},
   {{}, 'f13', {'cmd', 'shift'}, '['},
   {{}, 'f14', {'cmd', 'shift'}, ']'},
   {{}, 'f15', {'cmd'}, 'w'},
@@ -19,6 +21,8 @@ keymap = {
   {{'ctrl'}, 'j', {}, 'return'},
   {{'ctrl'}, ';', {}, 'delete'},
 
+  {{'cmd', 'ctrl'}, 'i', {'cmd', 'ctrl'}, 'i'},
+  {{'cmd', 'ctrl'}, 'o', {'cmd', 'ctrl'}, 'o'},
   {{'ctrl'}, 'i', {'cmd', 'shift'}, '['},
   {{'ctrl'}, 'o', {'cmd', 'shift'}, ']'},
   {{'ctrl'}, 'p', {'cmd'}, 'w'},
@@ -67,20 +71,36 @@ hs.hotkey.bind({'cmd'}, '/', function ()
   hs.mouse.setAbsolutePosition(n_scr.center)
 end)
 hs.window.filter.setLogLevel(1)
-hs.hotkey.bind({'ctrl'}, 'tab', function ()
+function switch_w(forward)
   local front_app_name = hs.application.frontmostApplication():name()
-  local front_w = hs.window.filter.new(false):setAppFilter(front_app_name, {}):getWindows(hs.window.filter.sortByFocused)[1]
-  if front_w then
-    if front_w:isVisible() then
-      front_w:focus()
-    else
-      front_w:unminimize()
+  local front_w = hs.window.frontmostWindow()
+  local sortby = forward and hs.window.filter.sortByCreated or hs.window.filter.sortByCreatedLast
+  local all_w = hs.window.filter.new(false):setAppFilter(front_app_name, {}):getWindows(sortby)
+  local count = 0
+  for k, v in pairs(all_w) do
+    count = count + 1;
+    if v == front_w then
+      break
     end
   end
+  local next_w = all_w[count + 1] or all_w[1]
+  if next_w then
+    if next_w:isVisible() then
+      next_w:focus()
+    else
+      next_w:unminimize()
+    end
+  end
+end
+hs.hotkey.bind({'cmd', 'ctrl'}, 'o', function ()
+  switch_w(true)
+end)
+hs.hotkey.bind({'cmd', 'ctrl'}, 'i', function ()
+  switch_w(false)
 end)
 hs.hotkey.bind({'ctrl'}, '\'', function ()
   local c_scr = hs.mouse.getCurrentScreen()
-  local front_w = hs.window.filter.new():setScreens(c_scr:id()):getWindows()[1]
+  local front_w = hs.window.filter.new():setCurrentSpace(true):setScreens(c_scr:id()):getWindows()[1]
   if front_w then
     front_w:focus()
   end
@@ -90,7 +110,7 @@ hs.hotkey.bind({'cmd', 'ctrl'}, '\'', function ()
   local n_scr = c_scr:next()
   hs.mouse.setAbsolutePosition(n_scr:fullFrame().center)
   -- hs.eventtap.leftClick(n_scr.center)
-  local front_w = hs.window.filter.new():setScreens(n_scr:id()):getWindows()[1]
+  local front_w = hs.window.filter.new():setCurrentSpace(true):setScreens(n_scr:id()):getWindows()[1]
   if front_w then
     front_w:focus()
   end
