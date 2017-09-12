@@ -3,8 +3,8 @@ function up(mods, key) return hs.eventtap.event.newKeyEvent(mods, key, false) en
 
 keymap = {
   {{}, 'help', {}, 'return'},
-  {{'cmd'}, 'f13', {'cmd', 'ctrl'}, 'i'},
-  {{'cmd'}, 'f14', {'cmd', 'ctrl'}, 'o'},
+  {{'cmd'}, 'f13', {'cmd'}, 'f13'},
+  {{'cmd'}, 'f14', {'cmd'}, 'f14'},
   {{}, 'f13', {'cmd', 'shift'}, '['},
   {{}, 'f14', {'cmd', 'shift'}, ']'},
   {{}, 'f15', {'cmd'}, 'w'},
@@ -92,11 +92,17 @@ function switch_w(forward)
     end
   end
 end
+hs.hotkey.bind({'cmd', 'ctrl'}, 'i', function ()
+  switch_w(false)
+end)
 hs.hotkey.bind({'cmd', 'ctrl'}, 'o', function ()
   switch_w(true)
 end)
-hs.hotkey.bind({'cmd', 'ctrl'}, 'i', function ()
+hs.hotkey.bind({'cmd'}, 'f13', function ()
   switch_w(false)
+end)
+hs.hotkey.bind({'cmd'}, 'f14', function ()
+  switch_w(true)
 end)
 hs.hotkey.bind({'ctrl'}, '\'', function ()
   local c_scr = hs.mouse.getCurrentScreen()
