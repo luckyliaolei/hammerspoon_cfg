@@ -155,8 +155,8 @@ event = hs.eventtap.new({ en_type.flagsChanged, en_type.otherMouseDown, en_type.
       elseif event:getProperty(en_prop.scrollWheelEventDeltaAxis1) < 0 then
         return true, {down({'ctrl'}, 'right'), up({'ctrl'}, 'right')}
       end
-    else
-      return false
+    elseif event:getProperty(en_prop.scrollWheelEventPointDeltaAxis2) ~= 0 then
+      return true, {hs.eventtap.event.newScrollEvent({0, event:getProperty(en_prop.scrollWheelEventPointDeltaAxis1)}, {}, "pixel")}
     end
   end
 
