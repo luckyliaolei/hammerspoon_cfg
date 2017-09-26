@@ -125,7 +125,7 @@ end)
 last_press = nil
 app_press = false
 en_type = hs.eventtap.event.types
-event = hs.eventtap.new({ en_type.flagsChanged, en_type.otherMouseDown, en_type.keyDown, en_type.keyUp }, function(event)
+event = hs.eventtap.new({ en_type.flagsChanged, en_type.otherMouseDown, en_type.scrollWheel, en_type.keyDown, en_type.keyUp }, function(event)
   local eventType = en_type[event:getType()]
 
   if eventType == 'flagsChanged' then
@@ -144,6 +144,19 @@ event = hs.eventtap.new({ en_type.flagsChanged, en_type.otherMouseDown, en_type.
       return true, {down({'ctrl'}, 'left'), up({'ctrl'}, 'left')}
     else
       return true, {down({'ctrl'}, 'up'), up({'ctrl'}, 'up')}
+    end
+  end
+
+  if eventType == 'scrollWheel' then
+    local en_prop = hs.eventtap.event.properties
+    if event:getFlags()['ctrl'] and event:getProperty(en_prop.scrollWheelEventIsContinuous) == 0 then
+      if event:getProperty(en_prop.scrollWheelEventDeltaAxis1) > 0 then
+        return true, {down({'ctrl'}, 'left'), up({'ctrl'}, 'left')}
+      elseif event:getProperty(en_prop.scrollWheelEventDeltaAxis1) < 0 then
+        return true, {down({'ctrl'}, 'right'), up({'ctrl'}, 'right')}
+      end
+    elseif event:getProperty(en_prop.scrollWheelEventPointDeltaAxis2) ~= 0 then
+      return true, {hs.eventtap.event.newScrollEvent({0, event:getProperty(en_prop.scrollWheelEventPointDeltaAxis1)}, {}, "pixel")}
     end
   end
 
