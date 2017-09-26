@@ -223,7 +223,7 @@ end
 function win_close(element)
   if not hs.window.focusedWindow() then
     local front_w = hs.window.filter.new():setCurrentSpace(true):setScreens(element:screen():id()):getWindows()[1]
-    if front_w then
+    if front_w and front_w ~= element then
       front_w:focus()
     end
   end
