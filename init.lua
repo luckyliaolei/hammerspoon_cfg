@@ -205,24 +205,30 @@ events = hs.uielement.watcher
 function handleGlobalAppEvent(name, event, app)
   if event == hs.application.watcher.launched then
     local watcher = app:newWatcher(win_open)
-    watcher:start({events.windowCreated})
+    watcher:start({events.windowCreated, events.windowMinimized})
     for i, window in pairs(app:allWindows()) do
-      win_open(window)
+      win_open(window, events.windowCreated)
     end
   end
 end
 
-function win_open(element)
-  if element._frame and element:frame() == element:screen():frame() then
+function win_open(element, event)
+  if event == events.windowCreated and  element._frame and element:frame() == element:screen():frame() then
     local f_scr = element:screen():fullFrame()
     element:setTopLeft(f_scr):setSize(f_scr)
+  end
+  if event == events.windowMinimized then
+    local front_w = hs.window.filter.new():setCurrentSpace(true):setScreens(element:screen():id()):getWindows()[1]
+    if front_w then
+      front_w:focus()
+    end
   end
 end
 
 apps = hs.application.runningApplications()
 for i = 1, #apps do
   local watcher = apps[i]:newWatcher(win_open)
-  watcher:start({events.windowCreated})
+  watcher:start({events.windowCreated, events.windowMinimized})
 end
 
 app_event = hs.application.watcher.new(handleGlobalAppEvent):start()
