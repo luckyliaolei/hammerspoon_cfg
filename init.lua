@@ -206,12 +206,15 @@ function handleGlobalAppEvent(name, event, app)
   if event == hs.application.watcher.launched then
     app:newWatcher(win_open):start({events.windowCreated})
   end
+  for i, window in pairs(app:allWindows()) do
+    win_open(window)
+  end
 end
 app_event = hs.application.watcher.new(handleGlobalAppEvent):start()
 
-function win_open(element, event)
+function win_open(element)
   element:newWatcher(win_close):start({events.windowMinimized, events.elementDestroyed})
-  if event == events.windowCreated and element._frame and element:frame() == element:screen():frame() then
+  if element._frame and element:frame() == element:screen():frame() then
     local f_scr = element:screen():fullFrame()
     element:setTopLeft(f_scr):setSize(f_scr)
   end
