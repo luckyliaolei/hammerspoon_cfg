@@ -213,7 +213,7 @@ function handleGlobalAppEvent(name, event, app)
 end
 
 function win_open(element, event)
-  if event == events.windowCreated and  element._frame and element:frame() == element:screen():frame() then
+  if event == events.windowCreated and element._frame and element:frame() == element:screen():frame() then
     local f_scr = element:screen():fullFrame()
     element:setTopLeft(f_scr):setSize(f_scr)
   end
