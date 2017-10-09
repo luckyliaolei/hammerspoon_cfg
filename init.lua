@@ -205,9 +205,9 @@ events = hs.uielement.watcher
 function handleGlobalAppEvent(name, event, app)
   if event == hs.application.watcher.launched then
     app:newWatcher(win_open):start({events.windowCreated})
-  end
-  for i, window in pairs(app:allWindows()) do
-    win_open(window)
+    for i, window in pairs(app:allWindows()) do
+      win_open(window)
+    end
   end
 end
 app_event = hs.application.watcher.new(handleGlobalAppEvent):start()
@@ -220,7 +220,7 @@ function win_open(element)
   end
 end
 
-function win_close(element)
+function win_close(element, event, watcher)
   if not hs.window.focusedWindow() then
     local front_w = hs.window.filter.new():setScreens(element:screen():id()):getWindows()[1]
     if front_w and front_w ~= element then
