@@ -1,5 +1,12 @@
 function down(mods, key) return hs.eventtap.event.newKeyEvent(mods, key, true) end
 function up(mods, key) return hs.eventtap.event.newKeyEvent(mods, key, false) end
+function focus(scr) 
+  -- local front_w = hs.window.filter.new():setCurrentSpace(true):setScreens(n_scr:id()):getWindows()[1]
+  local front_w = hs.window.filter.new():setScreens(scr:id()):getWindows()[1]
+  if front_w then
+    front_w:focus()
+  end
+end
 
 keymap = {
   {{}, 'help', {}, 'return'},
@@ -106,20 +113,13 @@ hs.hotkey.bind({'cmd'}, 'f14', function ()
 end)
 hs.hotkey.bind({'ctrl'}, '\'', function ()
   local c_scr = hs.mouse.getCurrentScreen()
-  local front_w = hs.window.filter.new():setCurrentSpace(true):setScreens(c_scr:id()):getWindows()[1]
-  if front_w then
-    front_w:focus()
-  end
+  focus(c_scr)
 end)
 hs.hotkey.bind({'cmd', 'ctrl'}, '\'', function ()
   local c_scr = hs.mouse.getCurrentScreen()
   local n_scr = c_scr:next()
   hs.mouse.setAbsolutePosition(n_scr:fullFrame().center)
-  -- hs.eventtap.leftClick(n_scr.center)
-  local front_w = hs.window.filter.new():setCurrentSpace(true):setScreens(n_scr:id()):getWindows()[1]
-  if front_w then
-    front_w:focus()
-  end
+  focus(n_scr)  
 end)
 
 last_press = nil
@@ -222,7 +222,7 @@ end
 
 function win_close(element)
   if not hs.window.focusedWindow() then
-    local front_w = hs.window.filter.new():setCurrentSpace(true):setScreens(element:screen():id()):getWindows()[1]
+    local front_w = hs.window.filter.new():setScreens(element:screen():id()):getWindows()[1]
     if front_w and front_w ~= element then
       front_w:focus()
     end
