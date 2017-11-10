@@ -9,16 +9,16 @@ function focus(scr)
 end
 
 keymap = {
-  {{}, 'help', {}, 'return'},
+  {{'fn'}, 'help', {}, 'return'},
   {{'cmd'}, 'f13', {'cmd'}, 'f13'},
   {{'cmd'}, 'f14', {'cmd'}, 'f14'},
-  {{}, 'f13', {'cmd', 'shift'}, '['},
-  {{}, 'f14', {'cmd', 'shift'}, ']'},
-  {{}, 'f15', {'cmd'}, 'w'},
+  {{'fn'}, 'f13', {'cmd', 'shift'}, '['},
+  {{'fn'}, 'f14', {'cmd', 'shift'}, ']'},
+  {{'fn'}, 'f15', {'cmd'}, 'w'},
   {{'cmd'}, 'home', {'cmd'}, 'up'},
   {{'cmd'}, 'end', {'cmd'}, 'down'},
-  {{}, 'home', {'cmd'}, 'left'},
-  {{}, 'end', {'cmd'}, 'right'},
+  {{'fn'}, 'home', {'cmd'}, 'left'},
+  {{'fn'}, 'end', {'cmd'}, 'right'},
 
   {{'ctrl'}, 'e', {}, 'up'},
   {{'ctrl'}, 's', {}, 'left'},
