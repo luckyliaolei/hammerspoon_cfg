@@ -1,6 +1,6 @@
 function down(mods, key) return hs.eventtap.event.newKeyEvent(mods, key, true) end
 function up(mods, key) return hs.eventtap.event.newKeyEvent(mods, key, false) end
-function focus(scr) 
+function focus(scr)
   -- local front_w = hs.window.filter.new():setCurrentSpace(true):setScreens(n_scr:id()):getWindows()[1]
   local front_w = hs.window.filter.new():setScreens(scr:id()):getWindows()[1]
   if front_w then
@@ -20,44 +20,43 @@ keymap = {
   {{'fn'}, 'home', {'cmd'}, 'left'},
   {{'fn'}, 'end', {'cmd'}, 'right'},
 
-  {{'ctrl'}, 'e', {}, 'up'},
-  {{'ctrl'}, 's', {}, 'left'},
-  {{'ctrl'}, 'd', {}, 'down'},
-  {{'ctrl'}, 'f', {}, 'right'},
+  {{'l_ctrl'}, 'e', {}, 'up'},
+  {{'l_ctrl'}, 's', {}, 'left'},
+  {{'l_ctrl'}, 'd', {}, 'down'},
+  {{'l_ctrl'}, 'f', {}, 'right'},
 
-  {{'ctrl'}, 'j', {}, 'return'},
-  {{'ctrl'}, ';', {}, 'delete'},
+  {{'r_ctrl'}, 'l', {}, 'pageup'},
+  {{'r_ctrl'}, '.', {}, 'pagedown'},
+  {{'r_ctrl'}, 'j', {}, 'return'},
+  {{'r_ctrl'}, ';', {}, 'delete'},
 
-  {{'cmd', 'ctrl'}, 'i', {'cmd', 'ctrl'}, 'i'},
-  {{'cmd', 'ctrl'}, 'o', {'cmd', 'ctrl'}, 'o'},
-  {{'ctrl'}, 'i', {'cmd', 'shift'}, '['},
-  {{'ctrl'}, 'o', {'cmd', 'shift'}, ']'},
-  {{'ctrl'}, 'p', {'cmd'}, 'w'},
-  
-  {{'cmd', 'ctrl'}, 'k', {'cmd'}, 'up'},
-  {{'cmd', 'ctrl'}, ',', {'cmd'}, 'down'},
-  {{'ctrl'}, 'k', {'cmd'}, 'left'},
-  {{'ctrl'}, ',', {'cmd'}, 'right'},
+  {{'r_ctrl', 'cmd'}, 'i', {'cmd', 'ctrl'}, 'i'},
+  {{'r_ctrl', 'cmd'}, 'o', {'cmd', 'ctrl'}, 'o'},
+  {{'r_ctrl'}, 'i', {'cmd', 'shift'}, '['},
+  {{'r_ctrl'}, 'o', {'cmd', 'shift'}, ']'},
+  {{'r_ctrl'}, 'p', {'cmd'}, 'w'},
 
-  {{'ctrl'}, '.', {'cmd'}, 'c'},
-  {{'ctrl'}, '/', {'cmd'}, 'v'},
+  {{'r_ctrl', 'cmd'}, 'k', {'cmd'}, 'up'},
+  {{'r_ctrl', 'cmd'}, ',', {'cmd'}, 'down'},
+  {{'r_ctrl'}, 'k', {'cmd'}, 'left'},
+  {{'r_ctrl'}, ',', {'cmd'}, 'right'},
 
-  {{'alt'}, 'space', {}, '0'},
-  {{'alt'}, 'n', {}, '1'},
-  {{'alt'}, 'm', {}, '2'},
-  {{'alt'}, ',', {}, '3'},
-  {{'alt'}, 'h', {}, '4'},
-  {{'alt'}, 'j', {}, '5'},
-  {{'alt'}, 'k', {}, '6'},
-  {{'alt'}, 'y', {}, '7'},
-  {{'alt'}, 'u', {}, '8'},
-  {{'alt'}, 'i', {}, '9'},
-  {{'alt'}, '.', {}, '.'},
-  {{'alt'}, '7', {}, '/'},
-  {{'alt'}, '8', {'shift'}, '8'},
-  {{'alt'}, 't', {}, '-'},
-  {{'alt'}, 'g', {'shift'}, '='},
-  {{'alt'}, 'l', {}, 'delete'},
+  {{'fn'}, 'space', {}, '0'},
+  {{'fn'}, 'n', {}, '1'},
+  {{'fn'}, 'm', {}, '2'},
+  {{'fn'}, ',', {}, '3'},
+  {{'fn'}, 'h', {}, '4'},
+  {{'fn'}, 'j', {}, '5'},
+  {{'fn'}, 'k', {}, '6'},
+  {{'fn'}, 'y', {}, '7'},
+  {{'fn'}, 'u', {}, '8'},
+  {{'fn'}, 'i', {}, '9'},
+  {{'fn'}, '.', {}, '.'},
+  {{'fn'}, '7', {}, '/'},
+  {{'fn'}, '8', {'shift'}, '8'},
+  {{'fn'}, 't', {}, '-'},
+  {{'fn'}, 'g', {'shift'}, '='},
+  {{'fn'}, 'l', {}, 'delete'},
 }
 
 hs.hotkey.bind({'cmd'}, ',', function ()
@@ -119,7 +118,7 @@ hs.hotkey.bind({'cmd', 'ctrl'}, '\'', function ()
   local c_scr = hs.mouse.getCurrentScreen()
   local n_scr = c_scr:next()
   hs.mouse.setAbsolutePosition(n_scr:fullFrame().center)
-  focus(n_scr)  
+  focus(n_scr)
 end)
 
 last_press = nil
@@ -169,21 +168,29 @@ event = hs.eventtap.new({ en_type.flagsChanged, en_type.otherMouseDown, en_type.
         return true, {evt}
       end
     end
-    
+
     for key, value in pairs(keymap) do
       local match_md = true
       local en_flag = event:getFlags()
-      for key, md in pairs(value[1]) do      
-        match_md = match_md and en_flag[md]
-        en_flag[md] = false
-      end
       flags = event:getRawEventData().NSEventData.modifierFlags
-      if (flags << 63 >> 63) == 1 and (flags << 50 >> 63) == 1 then
-        en_flag['ctrl'] = true
+      for key, md in pairs(value[1]) do
+        if md == 'r_ctrl'  then
+          match_md =  (flags << 50 >> 63) == 1
+          md = 'ctrl'
+        elseif md == 'l_ctrl' then
+          match_md = (flags << 63 >> 63) == 1
+          md = 'ctrl'
+        else
+          match_md = match_md and en_flag[md]
+        end
+        en_flag[md] = false
       end
       local match_key = hs.keycodes.map[event:getKeyCode()] == value[2]
       if match_md and match_key then
-        for key, md in pairs(value[3]) do      
+        if (flags << 63 >> 63) == 1 and (flags << 50 >> 63) == 1 then
+          en_flag['ctrl'] = true
+        end
+        for key, md in pairs(value[3]) do
           en_flag[md] = true
         end
         if eventType == 'keyDown' then
@@ -195,7 +202,7 @@ event = hs.eventtap.new({ en_type.flagsChanged, en_type.otherMouseDown, en_type.
       end
     end
   end
-  
+
   return false
 end):start()
 
