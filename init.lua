@@ -20,26 +20,26 @@ keymap = {
   {{'fn'}, 'home', {'cmd'}, 'left'},
   {{'fn'}, 'end', {'cmd'}, 'right'},
 
-  {{'l_ctrl'}, 'e', {}, 'up'},
-  {{'l_ctrl'}, 's', {}, 'left'},
-  {{'l_ctrl'}, 'd', {}, 'down'},
-  {{'l_ctrl'}, 'f', {}, 'right'},
+  {{'l_ctrl'}, 'w', {}, 'up'},
+  {{'l_ctrl'}, 'a', {}, 'left'},
+  {{'l_ctrl'}, 's', {}, 'down'},
+  {{'l_ctrl'}, 'd', {}, 'right'},
 
-  {{'r_ctrl'}, 'l', {}, 'pageup'},
-  {{'r_ctrl'}, '.', {}, 'pagedown'},
-  {{'r_ctrl'}, 'j', {}, 'return'},
-  {{'r_ctrl'}, ';', {}, 'delete'},
+  {{'r_ctrl'}, ';', {}, 'pageup'},
+  {{'r_ctrl'}, '/', {}, 'pagedown'},
+  {{'r_ctrl'}, 'k', {}, 'return'},
+  {{'r_ctrl'}, '\'', {}, 'delete'},
 
-  {{'r_ctrl', 'cmd'}, 'i', {'cmd', 'ctrl'}, 'i'},
   {{'r_ctrl', 'cmd'}, 'o', {'cmd', 'ctrl'}, 'o'},
-  {{'r_ctrl'}, 'i', {'cmd', 'shift'}, '['},
-  {{'r_ctrl'}, 'o', {'cmd', 'shift'}, ']'},
-  {{'r_ctrl'}, 'p', {'cmd'}, 'w'},
+  {{'r_ctrl', 'cmd'}, 'p', {'cmd', 'ctrl'}, 'p'},
+  {{'r_ctrl'}, 'o', {'cmd', 'shift'}, '['},
+  {{'r_ctrl'}, 'p', {'cmd', 'shift'}, ']'},
+  {{'r_ctrl'}, '[', {'cmd'}, 'w'},
 
-  {{'r_ctrl', 'cmd'}, 'k', {'cmd'}, 'up'},
-  {{'r_ctrl', 'cmd'}, ',', {'cmd'}, 'down'},
-  {{'r_ctrl'}, 'k', {'cmd'}, 'left'},
-  {{'r_ctrl'}, ',', {'cmd'}, 'right'},
+  {{'r_ctrl', 'cmd'}, 'l', {'cmd'}, 'up'},
+  {{'r_ctrl', 'cmd'}, '.', {'cmd'}, 'down'},
+  {{'r_ctrl'}, 'l', {'cmd'}, 'left'},
+  {{'r_ctrl'}, '.', {'cmd'}, 'right'},
 
   {{'fn'}, 'space', {}, '0'},
   {{'fn'}, 'n', {}, '1'},
@@ -98,10 +98,10 @@ function switch_w(forward)
     end
   end
 end
-hs.hotkey.bind({'cmd', 'ctrl'}, 'i', function ()
+hs.hotkey.bind({'cmd', 'ctrl'}, 'o', function ()
   switch_w(false)
 end)
-hs.hotkey.bind({'cmd', 'ctrl'}, 'o', function ()
+hs.hotkey.bind({'cmd', 'ctrl'}, 'p', function ()
   switch_w(true)
 end)
 hs.hotkey.bind({'cmd'}, 'f13', function ()
@@ -110,11 +110,11 @@ end)
 hs.hotkey.bind({'cmd'}, 'f14', function ()
   switch_w(true)
 end)
-hs.hotkey.bind({'ctrl'}, '\'', function ()
+hs.hotkey.bind({'ctrl'}, ']', function ()
   local c_scr = hs.mouse.getCurrentScreen()
   focus(c_scr)
 end)
-hs.hotkey.bind({'cmd', 'ctrl'}, '\'', function ()
+hs.hotkey.bind({'cmd', 'ctrl'}, ']', function ()
   local c_scr = hs.mouse.getCurrentScreen()
   local n_scr = c_scr:next()
   hs.mouse.setAbsolutePosition(n_scr:fullFrame().center)
