@@ -41,22 +41,22 @@ keymap = {
   {{'r_ctrl'}, 'l', {'cmd'}, 'left'},
   {{'r_ctrl'}, '.', {'cmd'}, 'right'},
 
-  {{'fn'}, 'space', {}, '0'},
-  {{'fn'}, 'n', {}, '1'},
-  {{'fn'}, 'm', {}, '2'},
-  {{'fn'}, ',', {}, '3'},
-  {{'fn'}, 'h', {}, '4'},
-  {{'fn'}, 'j', {}, '5'},
-  {{'fn'}, 'k', {}, '6'},
-  {{'fn'}, 'y', {}, '7'},
-  {{'fn'}, 'u', {}, '8'},
-  {{'fn'}, 'i', {}, '9'},
-  {{'fn'}, '.', {}, '.'},
-  {{'fn'}, '7', {}, '/'},
-  {{'fn'}, '8', {'shift'}, '8'},
-  {{'fn'}, 't', {}, '-'},
-  {{'fn'}, 'g', {'shift'}, '='},
-  {{'fn'}, 'l', {}, 'delete'},
+  {{'_'}, 'space', {}, '0'},
+  {{'_'}, 'n', {}, '1'},
+  {{'_'}, 'm', {}, '2'},
+  {{'_'}, ',', {}, '3'},
+  {{'_'}, 'h', {}, '4'},
+  {{'_'}, 'j', {}, '5'},
+  {{'_'}, 'k', {}, '6'},
+  {{'_'}, 'y', {}, '7'},
+  {{'_'}, 'u', {}, '8'},
+  {{'_'}, 'i', {}, '9'},
+  {{'_'}, '.', {}, '.'},
+  {{'_'}, '7', {}, '/'},
+  {{'_'}, '8', {'shift'}, '8'},
+  {{'_'}, 't', {}, '-'},
+  {{'_'}, 'g', {'shift'}, '='},
+  {{'_'}, 'l', {}, 'delete'},
 }
 
 hs.hotkey.bind({'cmd'}, ',', function ()
@@ -122,7 +122,7 @@ hs.hotkey.bind({'cmd', 'ctrl'}, ']', function ()
 end)
 
 last_press = nil
-app_press = false
+_ = false
 en_type = hs.eventtap.event.types
 event = hs.eventtap.new({ en_type.flagsChanged, en_type.otherMouseDown, en_type.keyDown, en_type.keyUp }, function(event)
   local eventType = en_type[event:getType()]
@@ -148,15 +148,11 @@ event = hs.eventtap.new({ en_type.flagsChanged, en_type.otherMouseDown, en_type.
 
   if eventType == 'keyDown' or eventType == 'keyUp' then
     if event:getKeyCode() == 110 then
-      if eventType == 'keyDown' then
-        app_press = true
-      else
-        app_press = false
+      if eventType == 'keyUp' then
+        _ = not _
+        hs.alert.show(_ and 'On' or 'Off')
       end
       return true
-    end
-    if app_press then
-      event:setFlags({cmd=true})
     end
 
     if last_press and hs.keycodes.map[event:getKeyCode()] == last_press[1][2] then
@@ -180,6 +176,8 @@ event = hs.eventtap.new({ en_type.flagsChanged, en_type.otherMouseDown, en_type.
         elseif md == 'l_ctrl' then
           match_md = (flags << 63 >> 63) == 1
           md = 'ctrl'
+        elseif md == '_' then
+          match_md = _
         else
           match_md = match_md and en_flag[md]
         end
