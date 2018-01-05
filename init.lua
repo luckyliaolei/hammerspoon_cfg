@@ -100,7 +100,8 @@ function switch_w(forward)
 end
 hs.hotkey.bind({'cmd'}, ';', function ()
   _ = not _
-  hs.alert.show(_ and 'On' or 'Off')
+  hs.alert.closeAll()
+  hs.alert.show(_ and 'ON' or 'OFF')
 end)
 hs.hotkey.bind({'cmd', 'ctrl'}, 'o', function ()
   switch_w(false)
