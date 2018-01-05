@@ -98,6 +98,10 @@ function switch_w(forward)
     end
   end
 end
+hs.hotkey.bind({'cmd'}, ';', function ()
+  _ = not _
+  hs.alert.show(_ and 'On' or 'Off')
+end)
 hs.hotkey.bind({'cmd', 'ctrl'}, 'o', function ()
   switch_w(false)
 end)
@@ -147,14 +151,6 @@ event = hs.eventtap.new({ en_type.flagsChanged, en_type.otherMouseDown, en_type.
   end
 
   if eventType == 'keyDown' or eventType == 'keyUp' then
-    if event:getKeyCode() == 110 then
-      if eventType == 'keyUp' then
-        _ = not _
-        hs.alert.show(_ and 'On' or 'Off')
-      end
-      return true
-    end
-
     if last_press and hs.keycodes.map[event:getKeyCode()] == last_press[1][2] then
       if eventType == 'keyDown' then
         return true, {down({}, last_press[1][4]):setFlags(last_press[2])}
