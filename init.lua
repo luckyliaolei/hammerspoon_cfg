@@ -13,7 +13,6 @@ keymap = {
   {{'shift'}, '=', {'shift'}, '='},
   {{}, '=', {}, ';'},
   {{'shift'}, ';', {'shift'}, ';'},
-  {{}, ';', {}, '='},
   {{'cmd'}, 'f13', {'cmd'}, 'f13'},
   {{'cmd'}, 'f14', {'cmd'}, 'f14'},
   {{'fn'}, 'f13', {'cmd', 'shift'}, '['},
@@ -33,6 +32,8 @@ keymap = {
   {{'r_ctrl'}, '/', {}, 'pagedown'},
   {{'r_ctrl'}, 'k', {}, 'return'},
   {{'r_ctrl'}, '\'', {}, 'delete'},
+
+  {{}, ';', {}, '='},
 
   {{'r_ctrl', 'cmd'}, 'o', {'cmd', 'ctrl'}, 'o'},
   {{'r_ctrl', 'cmd'}, 'p', {'cmd', 'ctrl'}, 'p'},
