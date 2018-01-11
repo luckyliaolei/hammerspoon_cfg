@@ -11,6 +11,7 @@ end
 keymap = {
   {{'fn'}, 'help', {}, 'return'},
   {{'shift'}, '=', {'shift'}, '='},
+  {{'cmd'}, '=', {'cmd'}, '='},
   {{}, '=', {}, ';'},
   {{'shift'}, ';', {'shift'}, ';'},
   {{'cmd'}, 'f13', {'cmd'}, 'f13'},
@@ -33,6 +34,7 @@ keymap = {
   {{'r_ctrl'}, 'k', {}, 'return'},
   {{'r_ctrl'}, '\'', {}, 'delete'},
 
+  {{'cmd'}, ';', {'cmd'}, ';'},
   {{}, ';', {}, '='},
 
   {{'r_ctrl', 'cmd'}, 'o', {'cmd', 'ctrl'}, 'o'},
@@ -103,7 +105,7 @@ function switch_w(forward)
     end
   end
 end
-hs.hotkey.bind({'cmd'}, '=', function ()
+hs.hotkey.bind({'cmd'}, ';', function ()
   _ = not _
   hs.alert.closeAll()
   hs.alert.show(_ and 'ON' or 'OFF')
