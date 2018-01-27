@@ -10,12 +10,9 @@ end
 
 keymap = {
   {{'fn'}, 'help', {}, 'return'},
-  {{'shift'}, '=', {'shift'}, '='},
-  {{'cmd'}, '=', {'cmd'}, '='},
-  {{}, '=', {}, ';'},
-  {{'shift'}, ';', {'shift'}, ';'},
   {{'cmd'}, 'f13', {'cmd'}, 'f13'},
   {{'cmd'}, 'f14', {'cmd'}, 'f14'},
+  {{'cmd'}, ';', {}, '='},
   {{'fn'}, 'f13', {'cmd', 'shift'}, '['},
   {{'fn'}, 'f14', {'cmd', 'shift'}, ']'},
   {{'fn'}, 'f15', {'cmd'}, 'w'},
@@ -33,9 +30,6 @@ keymap = {
   {{'r_ctrl'}, '/', {}, 'pagedown'},
   {{'r_ctrl'}, 'k', {}, 'return'},
   {{'r_ctrl'}, '\'', {}, 'delete'},
-
-  {{'cmd'}, ';', {'cmd'}, ';'},
-  {{}, ';', {}, '='},
 
   {{'r_ctrl', 'cmd'}, 'o', {'cmd', 'ctrl'}, 'o'},
   {{'r_ctrl', 'cmd'}, 'p', {'cmd', 'ctrl'}, 'p'},
@@ -58,7 +52,6 @@ keymap = {
   {{'_'}, 'y', {}, '7'},
   {{'_'}, 'u', {}, '8'},
   {{'_'}, 'i', {}, '9'},
-  {{'_'}, '.', {}, '.'},
   {{'_'}, '7', {}, '/'},
   {{'_'}, '8', {'shift'}, '8'},
   {{'_'}, 't', {}, '-'},
@@ -105,7 +98,7 @@ function switch_w(forward)
     end
   end
 end
-hs.hotkey.bind({'cmd'}, ';', function ()
+hs.hotkey.bind({'cmd'}, 'j', function ()
   _ = not _
   hs.alert.closeAll()
   hs.alert.show(_ and 'ON' or 'OFF')
@@ -180,7 +173,7 @@ event = hs.eventtap.new({ en_type.flagsChanged, en_type.otherMouseDown, en_type.
         elseif md == 'l_ctrl' then
           match_md = (flags << 63 >> 63) == 1
           md = 'ctrl'
-        elseif md == '_' then
+        elseif md == '_' and flags == 256 then
           match_md = _
         else
           match_md = match_md and en_flag[md]
