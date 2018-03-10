@@ -23,6 +23,7 @@ keymap = {
   {{'cmd'}, 'end', {'cmd'}, 'down'},
   {{'fn'}, 'home', {'cmd'}, 'left'},
   {{'fn'}, 'end', {'cmd'}, 'right'},
+  {{'fn'}, 'forwarddelete', {'cmd'}, 'delete'},
 
   {{'l_ctrl'}, 'w', {}, 'up'},
   {{'l_ctrl'}, 'a', {}, 'left'},
@@ -154,6 +155,11 @@ event = hs.eventtap.new({ en_type.flagsChanged, en_type.otherMouseDown, en_type.
   end
 
   if eventType == 'keyDown' or eventType == 'keyUp' then
+    if event:getKeyCode() == 110 then
+      return false
+      -- return true, {event:setFlags({alt = true})}
+    end
+
     if last_press and hs.keycodes.map[event:getKeyCode()] == last_press[1][2] then
       if eventType == 'keyDown' then
         return true, {down({}, last_press[1][4]):setFlags(last_press[2])}
