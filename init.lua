@@ -32,7 +32,7 @@ keymap = {
 
   {{'r_ctrl'}, '/', {}, 'pagedown'},
   {{'r_ctrl'}, 'k', {}, 'return'},
-  {{'r_ctrl'}, '\'', {}, 'delete'},
+  {{'r_ctrl'}, '\'', {'cmd'}, 'delete'},
 
   {{'r_ctrl', 'cmd'}, 'o', {'cmd', 'ctrl'}, 'o'},
   {{'r_ctrl', 'cmd'}, 'p', {'cmd', 'ctrl'}, 'p'},
@@ -73,7 +73,7 @@ hs.hotkey.bind({'cmd'}, '.', function ()
     hs.window.frontmostWindow():setTopLeft(f_scr):setSize(f_scr)
   end
 end)
-hs.hotkey.bind({'cmd'}, '/', function ()
+hs.hotkey.bind({'cmd', 'shift'}, ',', function ()
   local front_w = hs.window.frontmostWindow()
   local n_scr = front_w:screen():next():fullFrame()
   front_w:setTopLeft(n_scr):setSize(n_scr)
