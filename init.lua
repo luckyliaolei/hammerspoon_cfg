@@ -32,7 +32,8 @@ keymap = {
 
   {{'r_ctrl'}, '/', {}, 'pagedown'},
   {{'r_ctrl'}, 'k', {}, 'return'},
-  {{'r_ctrl'}, '\'', {'cmd'}, 'delete'},
+  {{'r_ctrl'}, '\'', {}, 'delete'},
+  {{'r_ctrl'}, ',', {'cmd'}, 'delete'},
 
   {{'r_ctrl', 'cmd'}, 'o', {'cmd', 'ctrl'}, 'o'},
   {{'r_ctrl', 'cmd'}, 'p', {'cmd', 'ctrl'}, 'p'},
