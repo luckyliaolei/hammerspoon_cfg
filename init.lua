@@ -144,16 +144,16 @@ event = hs.eventtap.new({ en_type.flagsChanged, en_type.otherMouseDown, en_type.
     end
   end
 
-  if eventType == 'otherMouseDown' then
-    local button_num = event:getRawEventData().NSEventData.buttonNumber
-    if button_num == 3 then
-      return true, {down({'ctrl'}, 'right'), up({'ctrl'}, 'right')}
-    elseif button_num == 4 then
-      return true, {down({'ctrl'}, 'left'), up({'ctrl'}, 'left')}
-    else
-      return true, {down({'ctrl'}, 'up'), up({'ctrl'}, 'up')}
-    end
-  end
+  -- if eventType == 'otherMouseDown' then
+  --   local button_num = event:getRawEventData().NSEventData.buttonNumber
+  --   if button_num == 3 then
+  --     return true, {down({'ctrl'}, 'right'), up({'ctrl'}, 'right')}
+  --   elseif button_num == 4 then
+  --     return true, {down({'ctrl'}, 'left'), up({'ctrl'}, 'left')}
+  --   else
+  --     return true, {down({'ctrl'}, 'up'), up({'ctrl'}, 'up')}
+  --   end
+  -- end
 
   if eventType == 'keyDown' or eventType == 'keyUp' then
     if event:getKeyCode() == 110 then
