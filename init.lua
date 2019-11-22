@@ -19,10 +19,10 @@ keymap = {
   {{'fn'}, 'f13', {'cmd', 'shift'}, '['},
   {{'fn'}, 'f14', {'cmd', 'shift'}, ']'},
   {{'fn'}, 'f15', {'cmd'}, 'w'},
-  {{'cmd'}, 'home', {'cmd'}, 'up'},
-  {{'cmd'}, 'end', {'cmd'}, 'down'},
-  {{'fn'}, 'home', {'cmd'}, 'left'},
-  {{'fn'}, 'end', {'cmd'}, 'right'},
+  -- {{'cmd'}, 'home', {'cmd'}, 'up'},
+  -- {{'cmd'}, 'end', {'cmd'}, 'down'},
+  -- {{'fn'}, 'home', {'cmd'}, 'left'},
+  -- {{'fn'}, 'end', {'cmd'}, 'right'},
   {{'fn'}, 'forwarddelete', {'cmd'}, 'delete'},
 
   {{'l_ctrl'}, 'w', {}, 'up'},
@@ -43,8 +43,8 @@ keymap = {
 
   {{'r_ctrl', 'cmd'}, 'l', {'cmd'}, 'up'},
   {{'r_ctrl', 'cmd'}, '.', {'cmd'}, 'down'},
-  {{'r_ctrl'}, 'l', {'cmd'}, 'left'},
-  {{'r_ctrl'}, '.', {'cmd'}, 'right'},
+  {{'r_ctrl'}, 'l', {}, 'home'},
+  {{'r_ctrl'}, '.', {}, 'end'},
 
   {{'r_ctrl'}, '0', {'cmd'}, 'c'},
   {{'r_ctrl'}, '-', {'cmd'}, 'v'},
