@@ -1,5 +1,14 @@
-function down(mods, key) return hs.eventtap.event.newKeyEvent(mods, key, true) end
-function up(mods, key) return hs.eventtap.event.newKeyEvent(mods, key, false) end
+function up(en_flag, key, down)
+  local evt = hs.eventtap.event.newKeyEvent(mods, key, down or false):setFlags(en_flag)
+  if key == 'up' or key == 'down' or key == 'right' or key == 'left' then
+    return evt:rawFlags(8388608 + evt:rawFlags())
+  else
+    return evt
+  end
+end
+function down(en_flag, key)
+  return up(en_flag, key, true)
+end
 function focus(scr)
   -- local front_w = hs.window.filter.new():setCurrentSpace(true):setScreens(n_scr:id()):getWindows()[1]
   local front_w = hs.window.filter.new():setScreens(scr:id()):getWindows()[1]
@@ -202,9 +211,9 @@ event = hs.eventtap.new({ en_type.flagsChanged, en_type.otherMouseDown, en_type.
         end
         if eventType == 'keyDown' then
           last_press = {value, en_flag}
-          return true, {down({}, value[4]):setFlags(en_flag)}
+          return true, {down(en_flag, value[4])}
         else
-          return true, {up({}, value[4]):setFlags(en_flag)}
+          return true, {up(en_flag, value[4])}
         end
       end
     end
