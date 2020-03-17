@@ -148,7 +148,7 @@ end)
 last_press = nil
 _ = false
 en_type = hs.eventtap.event.types
-event = hs.eventtap.new({ en_type.flagsChanged, en_type.otherMouseDown, en_type.keyDown, en_type.keyUp }, function(event)
+event = hs.eventtap.new({ en_type.flagsChanged, en_type.otherMouseDown, en_type.otherMouseUp, en_type.keyDown, en_type.keyUp, en_type.rightMouseDown, en_type.rightMouseUp }, function(event)
   local eventType = en_type[event:getType()]
 
   if eventType == 'flagsChanged' then
@@ -159,14 +159,37 @@ event = hs.eventtap.new({ en_type.flagsChanged, en_type.otherMouseDown, en_type.
     end
   end
 
+  if eventType == 'rightMouseDown' then
+    if event:getFlags()['ctrl'] then
+      return false
+    end
+    return true, {down({'cmd', 'ctrl'}, 'd')}
+  end
+  if eventType == 'rightMouseUp' then
+    if event:getFlags()['ctrl'] then
+      return false
+    end
+    return true, {up({'cmd', 'ctrl'}, 'd')}
+  end
+
   if eventType == 'otherMouseDown' then
     local button_num = event:getRawEventData().NSEventData.buttonNumber
     if button_num == 3 then
-      return true, {down({'ctrl'}, 'right'), up({'ctrl'}, 'right')}
+      return true, {down({'ctrl'}, 'right')}
     elseif button_num == 4 then
-      return true, {down({'ctrl'}, 'left'), up({'ctrl'}, 'left')}
+      return true, {down({'ctrl'}, 'left')}
     else
-      return true, {down({'cmd', 'ctrl'}, 'd'), up({'cmd', 'ctrl'}, 'd')}
+      return true, {down({'ctrl'}, 'up')}
+    end
+  end
+  if eventType == 'otherMouseUp' then
+    local button_num = event:getRawEventData().NSEventData.buttonNumber
+    if button_num == 3 then
+      return true, {up({'ctrl'}, 'right')}
+    elseif button_num == 4 then
+      return true, {up({'ctrl'}, 'left')}
+    else
+      return true, {up({'ctrl'}, 'up')}
     end
   end
 
