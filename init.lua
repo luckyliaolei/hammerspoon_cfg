@@ -163,13 +163,14 @@ event = hs.eventtap.new({ en_type.flagsChanged, en_type.otherMouseDown, en_type.
     if event:getFlags()['ctrl'] then
       return false
     end
-    return true, {down({'cmd', 'ctrl'}, 'd')}
+    return true
   end
   if eventType == 'rightMouseUp' then
     if event:getFlags()['ctrl'] then
       return false
     end
-    return true, {up({'cmd', 'ctrl'}, 'd')}
+    hs.eventtap.keyStroke({'cmd', 'ctrl'}, 'd', 100000)
+    return true
   end
 
   if eventType == 'otherMouseDown' then
