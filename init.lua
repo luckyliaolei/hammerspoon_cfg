@@ -55,8 +55,8 @@ keymap = {
 
   {{'r_ctrl', 'cmd'}, 'k', {'cmd'}, 'up'},
   {{'r_ctrl', 'cmd'}, ',', {'cmd'}, 'down'},
-  {{'r_ctrl'}, 'k', {}, 'home'},
-  {{'r_ctrl'}, ',', {}, 'end'},
+  {{'r_ctrl'}, 'k', {'cmd'}, 'left'},
+  {{'r_ctrl'}, ',', {'cmd'}, 'right'},
 
   {{'r_ctrl'}, '9', {'cmd'}, 'c'},
   {{'r_ctrl'}, '0', {'cmd'}, 'v'},
