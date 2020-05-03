@@ -200,7 +200,7 @@ event = hs.eventtap.new({ en_type.flagsChanged, en_type.otherMouseDown, en_type.
       -- return true, {event:setFlags({alt = true})}
     end
 
-    if last_press and hs.keycodes.map[event:getKeyCode()] == last_press[1][2] then
+    if last_press and hs.keycodes.map[event:getKeyCode()] == last_press[1][2] and next(event:getFlags()) == nil then
       if eventType == 'keyDown' then
         return true, {down({}, last_press[1][4]):setFlags(last_press[2])}
       else
