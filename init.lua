@@ -199,7 +199,7 @@ event = hs.eventtap.new({ en_type.flagsChanged, en_type.otherMouseDown, en_type.
       return false
       -- return true, {event:setFlags({alt = true})}
     end
-
+    
     if last_keydown then
       if hs.keycodes.map[event:getKeyCode()] == last_keydown[1][2] then
         if eventType == 'keyDown' then
@@ -247,12 +247,12 @@ event = hs.eventtap.new({ en_type.flagsChanged, en_type.otherMouseDown, en_type.
         if eventType == 'keyDown' then
           last_cvt_keydown = last_keydown
           last_keydown = {value, en_flag}
-          if event:getProperty(hs.eventtap.event.properties['keyboardEventAutorepeat']) then
-            if last_cvt_keydown then
-              if last_cvt_keydown[1][4] ~= value[4] then
-                return true, {up({}, last_cvt_keydown[1][4], last_cvt_keydown[2]), down({}, value[4], en_flag)}
-              end
-            else
+          if last_cvt_keydown then
+            if last_cvt_keydown[1][4] ~= value[4] then
+              return true, {up({}, last_cvt_keydown[1][4], last_cvt_keydown[2]), down({}, value[4], en_flag)}
+            end
+          else
+            if event:getProperty(hs.eventtap.event.properties['keyboardEventAutorepeat']) == 1 then
               return true, {event:setType(hs.eventtap.event.types['keyUp']), down({}, value[4], en_flag)}
             end
           end
