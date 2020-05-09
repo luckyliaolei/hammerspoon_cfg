@@ -201,10 +201,20 @@ event = hs.eventtap.new({ en_type.flagsChanged, en_type.otherMouseDown, en_type.
     end
 
     if last_keydown then
-      if eventType == 'keyDown' and hs.keycodes.map[event:getKeyCode()] == last_keydown[1][2] and next(event:getFlags()) == nil then
-        return true, {down({}, last_keydown[1][4]):setFlags(last_keydown[2])}
+      if hs.keycodes.map[event:getKeyCode()] == last_keydown[1][2] and next(event:getFlags()) == nil then
+        if eventType == 'keyDown' then
+          return true, {down({}, last_keydown[1][4]):setFlags(last_keydown[2])}
+        else
+          local evt = up({}, last_keydown[1][4]):setFlags(last_keydown[2])
+          last_keydown = nil
+          return true, {evt}
+        end
       else
         last_keydown = nil
+      end
+    else
+      if eventType == 'keyUp' then
+        return false
       end
     end
 
@@ -236,6 +246,9 @@ event = hs.eventtap.new({ en_type.flagsChanged, en_type.otherMouseDown, en_type.
         end
         if eventType == 'keyDown' then
           last_keydown = {value, en_flag}
+          if event:getProperty(hs.eventtap.event.properties['keyboardEventAutorepeat']) then
+            return true, {event:setType(hs.eventtap.event.types['keyUp']), down({}, value[4], en_flag)}
+          end
           return true, {down({}, value[4], en_flag)}
         else
           return true, {up({}, value[4], en_flag)}
