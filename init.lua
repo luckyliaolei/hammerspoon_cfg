@@ -145,7 +145,7 @@ hs.hotkey.bind({'cmd', 'ctrl'}, '[', function ()
   focus(n_scr)
 end)
 
-last_press = nil
+last_keydown = nil
 _ = false
 en_type = hs.eventtap.event.types
 event = hs.eventtap.new({ en_type.flagsChanged, en_type.otherMouseDown, en_type.otherMouseUp, en_type.keyDown, en_type.keyUp, en_type.rightMouseDown, en_type.rightMouseUp }, function(event)
