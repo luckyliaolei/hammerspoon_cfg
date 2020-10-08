@@ -1,3 +1,25 @@
+hs.window.filter.setLogLevel(1)
+function switch_w(forward)
+  local front_app_name = hs.application.frontmostApplication():name()
+  local front_w = hs.window.frontmostWindow()
+  local sortby = forward and hs.window.filter.sortByCreated or hs.window.filter.sortByCreatedLast
+  local all_w = hs.window.filter.new(false):setAppFilter(front_app_name, {}):getWindows(sortby)
+  local count = 0
+  for k, v in pairs(all_w) do
+    count = count + 1;
+    if v == front_w then
+      break
+    end
+  end
+  local next_w = all_w[count + 1] or all_w[1]
+  if next_w then
+    if next_w:isVisible() then
+      next_w:focus()
+    else
+      next_w:unminimize()
+    end
+  end
+end
 function up(mods, key, en_flag, down)
   local evt = hs.eventtap.event.newKeyEvent(mods, key, down or false)
   if en_flag then
@@ -60,6 +82,8 @@ keymap = {
 
   {{'r_ctrl'}, '9', {'cmd'}, 'c'},
   {{'r_ctrl'}, '0', {'cmd'}, 'v'},
+  {{}, 'f9', {'cmd'}, 'c'},
+  {{}, 'f10', {'cmd'}, 'v'},
 
   {{'_'}, 'space', {}, '0'},
   {{'_'}, 'n', {}, '1'},
@@ -83,40 +107,26 @@ hs.hotkey.bind({'cmd'}, ',', function ()
 end)
 hs.hotkey.bind({'cmd'}, '.', function ()
   local f_scr = hs.window.frontmostWindow():screen():fullFrame()
-  if hs.window.frontmostWindow():frame().x == f_scr.x then
-    hs.window.frontmostWindow():move({0.1, 0.05, 0.8, 0.8}, 0)
+  if hs.window.frontmostWindow():frame().w == f_scr.w then
+    hs.window.frontmostWindow():move({0.2, 0, 0.6, 1})
   else
     hs.window.frontmostWindow():setTopLeft(f_scr):setSize(f_scr)
   end
 end)
-hs.hotkey.bind({'cmd', 'shift'}, ',', function ()
+hs.hotkey.bind({'cmd', 'shift'}, '.', function ()
   local front_w = hs.window.frontmostWindow()
   local n_scr = front_w:screen():next():fullFrame()
   front_w:setTopLeft(n_scr):setSize(n_scr)
   hs.mouse.setAbsolutePosition(n_scr.center)
 end)
-hs.window.filter.setLogLevel(1)
-function switch_w(forward)
-  local front_app_name = hs.application.frontmostApplication():name()
+hs.hotkey.bind({'cmd', 'ctrl'}, '.', function ()
   local front_w = hs.window.frontmostWindow()
-  local sortby = forward and hs.window.filter.sortByCreated or hs.window.filter.sortByCreatedLast
-  local all_w = hs.window.filter.new(false):setAppFilter(front_app_name, {}):getWindows(sortby)
-  local count = 0
-  for k, v in pairs(all_w) do
-    count = count + 1;
-    if v == front_w then
-      break
-    end
-  end
-  local next_w = all_w[count + 1] or all_w[1]
-  if next_w then
-    if next_w:isVisible() then
-      next_w:focus()
-    else
-      next_w:unminimize()
-    end
-  end
-end
+  front_w:move({0, 0, 0.5, 1})
+end)
+hs.hotkey.bind({'cmd', 'ctrl'}, '/', function ()
+  local front_w = hs.window.frontmostWindow()
+  front_w:move({0.5, 0, 0.5, 1})
+end)
 hs.hotkey.bind({'cmd'}, 'j', function ()
   _ = not _
   hs.alert.closeAll()
@@ -134,11 +144,11 @@ end)
 hs.hotkey.bind({'cmd'}, 'f14', function ()
   switch_w(true)
 end)
-hs.hotkey.bind({'ctrl'}, '[', function ()
+hs.hotkey.bind({'ctrl'}, 'f', function ()
   local c_scr = hs.mouse.getCurrentScreen()
   focus(c_scr)
 end)
-hs.hotkey.bind({'cmd', 'ctrl'}, '[', function ()
+hs.hotkey.bind({'cmd', 'ctrl'}, 'f', function ()
   local c_scr = hs.mouse.getCurrentScreen()
   local n_scr = c_scr:next()
   hs.mouse.setAbsolutePosition(n_scr:fullFrame().center)
