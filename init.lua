@@ -108,7 +108,7 @@ end)
 hs.hotkey.bind({'cmd'}, '.', function ()
   local f_scr = hs.window.frontmostWindow():screen():fullFrame()
   if hs.window.frontmostWindow():frame().w == f_scr.w then
-    hs.window.frontmostWindow():move({0.2, 0, 0.6, 1})
+    hs.window.frontmostWindow():move({0.25, 0, 0.5, 1})
   else
     hs.window.frontmostWindow():setTopLeft(f_scr):setSize(f_scr)
   end
@@ -206,8 +206,8 @@ event = hs.eventtap.new({ en_type.flagsChanged, en_type.otherMouseDown, en_type.
 
   if eventType == 'keyDown' or eventType == 'keyUp' then
     if event:getKeyCode() == 110 then
-      return false
-      -- return true, {event:setFlags({alt = true})}
+      -- return false
+      return true, {hs.eventtap.event.newKeyEvent('alt', eventType == 'keyDown')}
     end
     
     if last_keydown then
