@@ -155,6 +155,21 @@ hs.hotkey.bind({'cmd', 'ctrl'}, 'f', function ()
   focus(n_scr)
 end)
 
+-- volume control
+local function sendSystemKey(key)
+  hs.eventtap.event.newSystemKeyEvent(key, true):post()
+  hs.eventtap.event.newSystemKeyEvent(key, false):post()
+end
+
+local volume = {
+  up   = function() sendSystemKey("SOUND_UP") end,
+  down = function() sendSystemKey("SOUND_DOWN") end,
+  mute = function() sendSystemKey("MUTE") end,
+}
+hs.hotkey.bind({}, "f4", volume.mute)
+hs.hotkey.bind({}, "f2", volume.down, nil, volume.down)
+hs.hotkey.bind({}, "f3", volume.up, nil, volume.up)
+
 last_keydown = nil
 _ = false
 en_type = hs.eventtap.event.types
