@@ -20,10 +20,10 @@ function switch_w(forward)
     end
   end
 end
-function up(mods, key, en_flag, down)
+function up(mods, key, md_flag, down)
   local evt = hs.eventtap.event.newKeyEvent(mods, key, down or false)
-  if en_flag then
-    evt = evt:setFlags(en_flag)
+  if md_flag then
+    evt = evt:setFlags(md_flag)
   end
   if key == 'up' or key == 'down' or key == 'right' or key == 'left' then
     return evt:rawFlags(8388608 + evt:rawFlags())
@@ -31,8 +31,8 @@ function up(mods, key, en_flag, down)
     return evt
   end
 end
-function down(mods, key, en_flag)
-  return up(mods, key, en_flag, true)
+function down(mods, key, md_flag)
+  return up(mods, key, md_flag, true)
 end
 function focus(scr)
   -- local front_w = hs.window.filter.new():setCurrentSpace(true):setScreens(n_scr:id()):getWindows()[1]
@@ -41,14 +41,61 @@ function focus(scr)
     front_w:focus()
   end
 end
+function ctrl_k(flags)
+  ctrl = {}
+  if (flags << 50 >> 63) == 1 then 
+    ctrl['r_ctrl'] = true
+  end
+  if (flags << 63 >> 63) ~= 1 then
+    ctrl['l_ctrl'] = true
+  end
+  return ctrl
+end
+function is_match(value, md_flag, key, flags)
+  ctrl = ctrl_k(flags)
+  local md_pure = {}
+  for idx, val in pairs(value[1]) do
+    if val == 'r_ctrl' or val == 'r_ctrl' then
+      if not ctrl[val] then
+        return false
+      end
+      table.insert(md_pure, 'ctrl')
+    else
+      table.insert(md_pure, val)
+    end
+  end
+  return md_flag:containExactly(md_pure) and value[2] == key
+end
+
+function is_contain(value, md_flag, key, flags)
+  ctrl = ctrl_k(flags)
+  if value[2] ~= key then
+    return false
+  end
+
+  for idx, val in pairs(value[1]) do
+    if val == 'r_ctrl' or val == 'r_ctrl' then
+      if not ctrl[val] then
+        return false
+      end
+      if not (ctrl['r_ctrl'] and ctrl['l_ctrl']) then
+        md_flag['ctrl'] = false
+      end
+    else
+      if not md_flag[val] then
+        return false
+      end
+      md_flag[val] = false
+    end
+  end
+  return md_flag
+end
 
 keymap = {
-  {{'fn'}, 'help', {}, 'return'},
+
   {{'cmd'}, 'f13', {'cmd'}, 'f13'},
   {{'cmd'}, 'f14', {'cmd'}, 'f14'},
-  {{'r_ctrl'}, ';', {}, 'delete'},
   {{'cmd'}, ';', {}, ';'},
-  {{'shift'}, ';', {'shift'}, ';'},
   {{}, ';', {}, '='},
   {{'fn'}, 'f13', {'cmd', 'shift'}, '['},
   {{'fn'}, 'f14', {'cmd', 'shift'}, ']'},
@@ -59,14 +106,6 @@ keymap = {
   -- {{'fn'}, 'end', {'cmd'}, 'right'},
   {{'fn'}, 'forwarddelete', {'cmd'}, 'delete'},
 
-  {{'l_ctrl'}, 'e', {}, 'up'},
-  {{'l_ctrl'}, 's', {}, 'left'},
-  {{'l_ctrl'}, 'd', {}, 'down'},
-  {{'l_ctrl'}, 'f', {}, 'right'},
-
-  {{'r_ctrl'}, 'l', {}, 'pageup'},
-  {{'r_ctrl'}, '.', {}, 'pagedown'},
-  {{'r_ctrl'}, 'j', {}, 'return'},
   {{'r_ctrl'}, 'm', {'cmd'}, 'delete'},
 
   {{'r_ctrl', 'cmd'}, 'i', {'cmd', 'ctrl'}, 'i'},
@@ -77,30 +116,49 @@ keymap = {
 
   {{'r_ctrl', 'cmd'}, 'k', {'cmd'}, 'up'},
   {{'r_ctrl', 'cmd'}, ',', {'cmd'}, 'down'},
-  {{'r_ctrl'}, 'k', {}, 'home'},
-  {{'r_ctrl'}, ',', {}, 'end'},
-
   {{'r_ctrl'}, '9', {'cmd'}, 'c'},
   {{'r_ctrl'}, '0', {'cmd'}, 'v'},
   {{}, 'f9', {'cmd'}, 'c'},
   {{}, 'f10', {'cmd'}, 'v'},
 
-  {{'_'}, 'space', {}, '0'},
-  {{'_'}, 'n', {}, '1'},
-  {{'_'}, 'm', {}, '2'},
-  {{'_'}, ',', {}, '3'},
-  {{'_'}, 'h', {}, '4'},
-  {{'_'}, 'j', {}, '5'},
-  {{'_'}, 'k', {}, '6'},
-  {{'_'}, 'y', {}, '7'},
-  {{'_'}, 'u', {}, '8'},
-  {{'_'}, 'i', {}, '9'},
-  {{'_'}, '7', {}, '/'},
-  {{'_'}, '8', {'shift'}, '8'},
-  {{'_'}, 't', {}, '-'},
-  {{'_'}, 'g', {'shift'}, '='},
-  {{'_'}, 'l', {}, 'delete'},
 }
+
+one_key = {
+
+  {{'fn'}, 'help', {}, 'return'},
+  {{'r_ctrl'}, ';', {}, 'delete'},
+
+  {{'l_ctrl'}, 'e', {}, 'up'},
+  {{'l_ctrl'}, 's', {}, 'left'},
+  {{'l_ctrl'}, 'd', {}, 'down'},
+  {{'l_ctrl'}, 'f', {}, 'right'},
+
+  {{'r_ctrl'}, 'l', {}, 'pageup'},
+  {{'r_ctrl'}, '.', {}, 'pagedown'},
+  {{'r_ctrl'}, 'j', {}, 'return'},
+  {{'r_ctrl'}, 'k', {}, 'home'},
+  {{'r_ctrl'}, ',', {}, 'end'},
+
+}
+
+pad = {
+  ['spce'] = {{}, '0'},
+  ['n'] = {{}, '1'},
+  ['m'] = {{}, '2'},
+  [','] = {{}, '3'},
+  ['h'] = {{}, '4'},
+  ['j'] = {{}, '5'},
+  ['k'] = {{}, '6'},
+  ['y'] = {{}, '7'},
+  ['u'] = {{}, '8'},
+  ['i'] = {{}, '9'},
+  ['7'] = {{}, '/'},
+  ['8'] = {{'shift'}, '8'},
+  ['t'] = {{}, '-'},
+  ['g'] = {{'shift'}, '='},
+  ['l'] = {{}, 'delete'},
+}
+
 
 hs.hotkey.bind({'cmd'}, ',', function ()
   hs.window.frontmostWindow():toggleFullScreen()
@@ -166,7 +224,7 @@ local volume = {
   down = function() sendSystemKey("SOUND_DOWN") end,
   mute = function() sendSystemKey("MUTE") end,
 }
-hs.hotkey.bind({}, "f4", volume.mute)
+hs.hotkey.bind({}, "f1", volume.mute)
 hs.hotkey.bind({}, "f2", volume.down, nil, volume.down)
 hs.hotkey.bind({}, "f3", volume.up, nil, volume.up)
 
@@ -225,6 +283,22 @@ event = hs.eventtap.new({ en_type.flagsChanged, en_type.otherMouseDown, en_type.
       return true, {hs.eventtap.event.newKeyEvent('alt', eventType == 'keyDown')}
     end
     
+    local md_flag = event:getFlags()
+    flags = event:getRawEventData().NSEventData.modifierFlags
+    key = hs.keycodes.map[event:getKeyCode()]
+
+    if _ then
+      if pad[key] then
+        return true, {hs.eventtap.event.newKeyEvent(pad[key][1], pad[key][2], eventType == 'keyDown')}
+      end
+    end
+
+    for idx, value in pairs(keymap) do
+      if is_match(value, md_flag, key, flags) then
+        return true, {hs.eventtap.event.newKeyEvent(value[3], value[4], eventType == 'keyDown')}
+      end
+    end
+
     if last_keydown then
       if hs.keycodes.map[event:getKeyCode()] == last_keydown[1][2] then
         if eventType == 'keyDown' then
@@ -243,47 +317,27 @@ event = hs.eventtap.new({ en_type.flagsChanged, en_type.otherMouseDown, en_type.
       end
     end
 
-    for key, value in pairs(keymap) do
-      local match_md = true
-      local en_flag = event:getFlags()
-      flags = event:getRawEventData().NSEventData.modifierFlags
-      for key, md in pairs(value[1]) do
-        if md == 'r_ctrl'  then
-          match_md =  (flags << 50 >> 63) == 1
-          md = 'ctrl'
-        elseif md == 'l_ctrl' then
-          match_md = (flags << 63 >> 63) == 1
-          md = 'ctrl'
-        elseif md == '_' and flags == 256 then
-          match_md = _
-        else
-          match_md = match_md and en_flag[md]
-        end
-        en_flag[md] = false
-      end
-      local match_key = hs.keycodes.map[event:getKeyCode()] == value[2]
-      if match_md and match_key then
-        if (flags << 63 >> 63) == 1 and (flags << 50 >> 63) == 1 then
-          en_flag['ctrl'] = true
-        end
-        for key, md in pairs(value[3]) do
-          en_flag[md] = true
+    for idx, value in pairs(one_key) do
+      new_flag = is_contain(value, event:getFlags(), key, flags)
+      if new_flag then
+        for idx, md in pairs(value[3]) do
+          new_flag[md] = true
         end
         if eventType == 'keyDown' then
           last_cvt_keydown = last_keydown
-          last_keydown = {value, en_flag}
+          last_keydown = {value, new_flag}
           if last_cvt_keydown then
             if last_cvt_keydown[1][4] ~= value[4] then
-              return true, {up({}, last_cvt_keydown[1][4], last_cvt_keydown[2]), down({}, value[4], en_flag)}
+              return true, {up({}, last_cvt_keydown[1][4], last_cvt_keydown[2]), down({}, value[4], new_flag)}
             end
           else
             if event:getProperty(hs.eventtap.event.properties['keyboardEventAutorepeat']) == 1 then
-              return true, {event:setType(hs.eventtap.event.types['keyUp']), down({}, value[4], en_flag)}
+              return true, {event:setType(hs.eventtap.event.types['keyUp']), down({}, value[4], new_flag)}
             end
           end
-          return true, {down({}, value[4], en_flag)}
+          return true, {down({}, value[4], new_flag)}
         else
-          return true, {up({}, value[4], en_flag)}
+          return true, {up({}, value[4], new_flag)}
         end
       end
     end
@@ -291,39 +345,3 @@ event = hs.eventtap.new({ en_type.flagsChanged, en_type.otherMouseDown, en_type.
 
   return false
 end):start()
-
--- Window event listen
--- events = hs.uielement.watcher
-
--- function handleGlobalAppEvent(name, event, app)
---   if event == hs.application.watcher.launched then
---     app:newWatcher(win_open):start({events.windowCreated})
---     for i, window in pairs(app:allWindows()) do
---       win_open(window)
---     end
---   end
--- end
--- app_event = hs.application.watcher.new(handleGlobalAppEvent):start()
-
--- function win_open(element)
---   element:newWatcher(win_close):start({events.windowMinimized, events.elementDestroyed})
---   if element._frame and element:frame() == element:screen():frame() then
---     local f_scr = element:screen():fullFrame()
---     element:setTopLeft(f_scr):setSize(f_scr)
---   end
--- end
-
--- function win_close(element, event, watcher)
---   if not hs.window.focusedWindow() then
---     local front_w = hs.window.filter.new():setScreens(element:screen():id()):getWindows()[1]
---     if front_w and front_w ~= element then
---       front_w:focus()
---     end
---   end
--- end
-
--- apps = hs.application.runningApplications()
--- for i = 1, #apps do
---   local watcher = apps[i]:newWatcher(win_open)
---   watcher:start({events.windowCreated, events.windowMinimized})
--- end
