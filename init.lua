@@ -46,7 +46,7 @@ function ctrl_k(flags)
   if (flags << 50 >> 63) == 1 then 
     ctrl['r_ctrl'] = true
   end
-  if (flags << 63 >> 63) ~= 1 then
+  if (flags << 63 >> 63) == 1 then
     ctrl['l_ctrl'] = true
   end
   return ctrl
