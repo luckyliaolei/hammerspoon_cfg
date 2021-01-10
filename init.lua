@@ -20,20 +20,16 @@ function switch_w(forward)
     end
   end
 end
-function up(mods, key, md_flag, down)
-  local evt = hs.eventtap.event.newKeyEvent(mods, key, down or false)
-  if md_flag then
-    evt = evt:setFlags(md_flag)
-  end
+
+function key_event(key_md, key, down)
+  local evt = hs.eventtap.event.newKeyEvent({}, key, down or false):setFlags(key_md)
   if key == 'up' or key == 'down' or key == 'right' or key == 'left' then
     return evt:rawFlags(8388608 + evt:rawFlags())
   else
     return evt
   end
 end
-function down(mods, key, md_flag)
-  return up(mods, key, md_flag, true)
-end
+
 function focus(scr)
   -- local front_w = hs.window.filter.new():setCurrentSpace(true):setScreens(n_scr:id()):getWindows()[1]
   local front_w = hs.window.filter.new():setScreens(scr:id()):getWindows()[1]
@@ -41,54 +37,65 @@ function focus(scr)
     front_w:focus()
   end
 end
-function ctrl_k(flags)
-  ctrl = {}
+
+function ctrl_k(md_flag, flags)
+  md_flag['ctrl'] = false
   if (flags << 50 >> 63) == 1 then 
-    ctrl['r_ctrl'] = true
+    md_flag['r_ctrl'] = true
   end
   if (flags << 63 >> 63) == 1 then
-    ctrl['l_ctrl'] = true
-  end
-  return ctrl
-end
-function is_match(value, md_flag, key, flags)
-  ctrl = ctrl_k(flags)
-  local md_pure = {}
-  for idx, val in pairs(value[1]) do
-    if val == 'r_ctrl' or val == 'r_ctrl' then
-      if not ctrl[val] then
-        return false
-      end
-      table.insert(md_pure, 'ctrl')
-    else
-      table.insert(md_pure, val)
-    end
-  end
-  return md_flag:containExactly(md_pure) and value[2] == key
-end
-
-function is_contain(value, md_flag, key, flags)
-  ctrl = ctrl_k(flags)
-  if value[2] ~= key then
-    return false
-  end
-
-  for idx, val in pairs(value[1]) do
-    if val == 'r_ctrl' or val == 'l_ctrl' then
-      if not ctrl[val] then
-        return false
-      end
-      if not (ctrl['r_ctrl'] and ctrl['l_ctrl']) then
-        md_flag['ctrl'] = false
-      end
-    else
-      if not md_flag[val] then
-        return false
-      end
-      md_flag[val] = false
-    end
+    md_flag['l_ctrl'] = true
   end
   return md_flag
+end
+
+function copy(t)
+  local u = { }
+  for k, v in pairs(t) do u[k] = v end
+  return setmetatable(u, getmetatable(t))
+end
+
+function containExactly(md_flag, md_map)
+  new_md = copy(md_flag)
+  for k, md in pairs(md_map) do
+    if not new_md[md] then
+      return false
+    end
+    new_md[md] = false
+  end
+  for md, bool in pairs(new_md) do
+    if bool then
+      return false
+    end
+  end
+  return true
+end
+
+function contain(md_flag, md_map)
+  for k, md in pairs(md_map) do
+    if not new_md[md] then
+      return false
+    end
+  end
+  return true
+end
+
+function is_match(values, md_flag, key, flags)
+  for idx, value in pairs(values) do
+    if containExactly(md_flag, value[1]) and value[2] == key then
+      return value
+    end
+  end
+  return false
+end
+
+function is_contain(values, md_flag, key, flags)
+  for idx, value in pairs(values) do
+    if contain(md_flag, value[1]) and value[2] == key then
+      return value
+    end
+  end
+  return false
 end
 
 keymap = {
@@ -125,19 +132,19 @@ keymap = {
 
 one_key = {
 
-  {{'fn'}, 'help', {}, 'return'},
-  {{'r_ctrl'}, ';', {}, 'delete'},
+  {{'fn'}, 'help', 'return'},
+  {{'r_ctrl'}, ';', 'delete'},
 
-  {{'l_ctrl'}, 'e', {}, 'up'},
-  {{'l_ctrl'}, 's', {}, 'left'},
-  {{'l_ctrl'}, 'd', {}, 'down'},
-  {{'l_ctrl'}, 'f', {}, 'right'},
+  {{'l_ctrl'}, 'e', 'up'},
+  {{'l_ctrl'}, 's', 'left'},
+  {{'l_ctrl'}, 'd', 'down'},
+  {{'l_ctrl'}, 'f', 'right'},
 
-  {{'r_ctrl'}, 'l', {}, 'pageup'},
-  {{'r_ctrl'}, '.', {}, 'pagedown'},
-  {{'r_ctrl'}, 'j', {}, 'return'},
-  {{'r_ctrl'}, 'k', {}, 'home'},
-  {{'r_ctrl'}, ',', {}, 'end'},
+  {{'r_ctrl'}, 'l', 'pageup'},
+  {{'r_ctrl'}, '.', 'pagedown'},
+  {{'r_ctrl'}, 'j', 'return'},
+  {{'r_ctrl'}, 'k', 'home'},
+  {{'r_ctrl'}, ',', 'end'},
 
 }
 
@@ -228,7 +235,7 @@ hs.hotkey.bind({}, "f1", volume.mute)
 hs.hotkey.bind({}, "f2", volume.down, nil, volume.down)
 hs.hotkey.bind({}, "f3", volume.up, nil, volume.up)
 
-last_keydown = nil
+one_key_md = nil
 _ = false
 en_type = hs.eventtap.event.types
 event = hs.eventtap.new({ en_type.flagsChanged, en_type.otherMouseDown, en_type.otherMouseUp, en_type.keyDown, en_type.keyUp, en_type.rightMouseDown, en_type.rightMouseUp }, function(event)
@@ -283,64 +290,42 @@ event = hs.eventtap.new({ en_type.flagsChanged, en_type.otherMouseDown, en_type.
       return true, {hs.eventtap.event.newKeyEvent('alt', eventType == 'keyDown')}
     end
     
-    local md_flag = event:getFlags()
     flags = event:getRawEventData().NSEventData.modifierFlags
+    md_flag = ctrl_k(event:getFlags(), flags)
     key = hs.keycodes.map[event:getKeyCode()]
 
-    if _ then
+    if _ and flags == 256 then
       if pad[key] then
         return true, {hs.eventtap.event.newKeyEvent(pad[key][1], pad[key][2], eventType == 'keyDown')}
       end
     end
 
-    for idx, value in pairs(keymap) do
-      if is_match(value, md_flag, key, flags) then
-        return true, {hs.eventtap.event.newKeyEvent(value[3], value[4], eventType == 'keyDown')}
+    if one_key_md then
+      for idx, md in pairs(one_key_md) do
+        md_flag[md] = true
       end
     end
 
-    if last_keydown then
-      if hs.keycodes.map[event:getKeyCode()] == last_keydown[1][2] then
-        if eventType == 'keyDown' then
-          if next(event:getFlags()) == nil then
-            return true, {down({}, last_keydown[1][4]):setFlags(last_keydown[2])}
-          end
-        else
-          local evt = up({}, last_keydown[1][4]):setFlags(last_keydown[2])
-          last_keydown = nil
-          return true, {evt}
-        end
+    value = is_match(keymap, md_flag, key, flags)
+    if value then
+      return true, {hs.eventtap.event.newKeyEvent(value[3], value[4], eventType == 'keyDown')}
+    end
+
+    value = is_contain(one_key, md_flag, key, flags)
+    if value then
+      one_key_md = value[1]
+      for idx, md in pairs(value[1]) do
+        md_flag[md] = false
       end
-    else
+      if md_flag['r_ctrl'] or md_flag['l_ctrl'] then
+        md_flag['ctrl'] = true
+      end
       if eventType == 'keyUp' then
-        return false
+        one_key_md = nil
       end
+      return true, {key_event(md_flag, value[3], eventType == 'keyDown')}
     end
 
-    for idx, value in pairs(one_key) do
-      new_flag = is_contain(value, event:getFlags(), key, flags)
-      if new_flag then
-        for idx, md in pairs(value[3]) do
-          new_flag[md] = true
-        end
-        if eventType == 'keyDown' then
-          last_cvt_keydown = last_keydown
-          last_keydown = {value, new_flag}
-          if last_cvt_keydown then
-            if last_cvt_keydown[1][4] ~= value[4] then
-              return true, {up({}, last_cvt_keydown[1][4], last_cvt_keydown[2]), down({}, value[4], new_flag)}
-            end
-          else
-            if event:getProperty(hs.eventtap.event.properties['keyboardEventAutorepeat']) == 1 then
-              return true, {event:setType(hs.eventtap.event.types['keyUp']), down({}, value[4], new_flag)}
-            end
-          end
-          return true, {down({}, value[4], new_flag)}
-        else
-          return true, {up({}, value[4], new_flag)}
-        end
-      end
-    end
   end
 
   return false
