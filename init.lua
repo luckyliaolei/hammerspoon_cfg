@@ -74,7 +74,7 @@ function is_contain(value, md_flag, key, flags)
   end
 
   for idx, val in pairs(value[1]) do
-    if val == 'r_ctrl' or val == 'r_ctrl' then
+    if val == 'r_ctrl' or val == 'l_ctrl' then
       if not ctrl[val] then
         return false
       end
