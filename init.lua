@@ -303,11 +303,15 @@ event = hs.eventtap.new({ en_type.flagsChanged, en_type.otherMouseDown, en_type.
 
     if keymap_key[key] then
       -- 重复的hotkey不会经过映射，导致不能长按功能失效，TODO！！！
-      local tmp_event = event:setKeyCode(hs.keycodes.map[keymap_key[key]]) 
+      local last_map_key = keymap_key[key]
       if eventType == 'keyUp' then
         keymap_key[key] = false
       end
-      return true, {tmp_event}
+      value = is_match(keymap, md_flag, key, flags)
+      if value and value[4] == last_map_key then
+        return true, {hs.eventtap.event.newKeyEvent(value[3], value[4], eventType == 'keyDown')}
+      end
+      return true, {event:setKeyCode(hs.keycodes.map[last_map_key])}
     elseif not autorepeat and eventType == 'keyDown' then
       value = is_match(keymap, md_flag, key, flags)
       if value then
