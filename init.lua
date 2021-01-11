@@ -302,7 +302,6 @@ event = hs.eventtap.new({ en_type.flagsChanged, en_type.otherMouseDown, en_type.
     end
 
     if keymap_key[key] then
-      -- 重复的hotkey不会经过映射，导致不能长按功能失效，TODO！！！
       local last_map_key = keymap_key[key]
       if eventType == 'keyUp' then
         keymap_key[key] = false
