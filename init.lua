@@ -56,7 +56,7 @@ function copy(t)
 end
 
 function containExactly(md_flag, md_map)
-  new_md = copy(md_flag)
+  local new_md = copy(md_flag)
   for k, md in pairs(md_map) do
     if not new_md[md] then
       return false
@@ -73,7 +73,7 @@ end
 
 function contain(md_flag, md_map)
   for k, md in pairs(md_map) do
-    if not new_md[md] then
+    if not md_flag[md] then
       return false
     end
   end
@@ -102,8 +102,6 @@ keymap = {
 
   {{'cmd'}, 'f13', {'cmd'}, 'f13'},
   {{'cmd'}, 'f14', {'cmd'}, 'f14'},
-  {{'cmd'}, ';', {}, ';'},
-  {{}, ';', {}, '='},
   {{'fn'}, 'f13', {'cmd', 'shift'}, '['},
   {{'fn'}, 'f14', {'cmd', 'shift'}, ']'},
   {{'fn'}, 'f15', {'cmd'}, 'w'},
@@ -127,7 +125,8 @@ keymap = {
   {{'r_ctrl'}, '0', {'cmd'}, 'v'},
   {{'fn'}, 'f9', {'cmd'}, 'c'},
   {{'fn'}, 'f10', {'cmd'}, 'v'},
-
+  {{'cmd'}, ';', {}, ';'},
+  {{}, ';', {}, '='},
 }
 
 one_key = {
@@ -235,7 +234,8 @@ hs.hotkey.bind({}, "f1", volume.mute)
 hs.hotkey.bind({}, "f2", volume.down, nil, volume.down)
 hs.hotkey.bind({}, "f3", volume.up, nil, volume.up)
 
-one_key_md = nil
+one_key_md = {}
+keymap_key = {}
 _ = false
 en_type = hs.eventtap.event.types
 event = hs.eventtap.new({ en_type.flagsChanged, en_type.otherMouseDown, en_type.otherMouseUp, en_type.keyDown, en_type.keyUp, en_type.rightMouseDown, en_type.rightMouseUp }, function(event)
@@ -266,21 +266,21 @@ event = hs.eventtap.new({ en_type.flagsChanged, en_type.otherMouseDown, en_type.
   if eventType == 'otherMouseDown' then
     local button_num = event:getRawEventData().NSEventData.buttonNumber
     if button_num == 3 then
-      return true, {down({'ctrl'}, 'right')}
+      return true, {key_event({['ctrl']=true}, 'right', true)}
     elseif button_num == 4 then
-      return true, {down({'ctrl'}, 'left')}
+      return true, {key_event({['ctrl']=true}, 'left', true)}
     else
-      return true, {down({'ctrl'}, 'up')}
+      return true, {key_event({['ctrl']=true}, 'up', true)}
     end
   end
   if eventType == 'otherMouseUp' then
     local button_num = event:getRawEventData().NSEventData.buttonNumber
     if button_num == 3 then
-      return true, {up({'ctrl'}, 'right')}
+      return true, {key_event({['ctrl']=true}, 'right', false)}
     elseif button_num == 4 then
-      return true, {up({'ctrl'}, 'left')}
+      return true, {key_event({['ctrl']=true}, 'left', false)}
     else
-      return true, {up({'ctrl'}, 'up')}
+      return true, {key_event({['ctrl']=true}, 'up', false)}
     end
   end
 
@@ -293,6 +293,7 @@ event = hs.eventtap.new({ en_type.flagsChanged, en_type.otherMouseDown, en_type.
     flags = event:getRawEventData().NSEventData.modifierFlags
     md_flag = ctrl_k(event:getFlags(), flags)
     key = hs.keycodes.map[event:getKeyCode()]
+    autorepeat = event:getProperty(hs.eventtap.event.properties['keyboardEventAutorepeat']) == 1
 
     if _ and flags == 256 then
       if pad[key] then
@@ -300,28 +301,43 @@ event = hs.eventtap.new({ en_type.flagsChanged, en_type.otherMouseDown, en_type.
       end
     end
 
-    if one_key_md then
-      for idx, md in pairs(one_key_md) do
-        md_flag[md] = true
+    if keymap_key[key] then
+      -- 重复的hotkey不会经过映射，导致不能长按功能失效，TODO！！！
+      local tmp_event = event:setKeyCode(hs.keycodes.map[keymap_key[key]]) 
+      if eventType == 'keyUp' then
+        keymap_key[key] = false
+      end
+      return true, {tmp_event}
+    elseif not autorepeat and eventType == 'keyDown' then
+      value = is_match(keymap, md_flag, key, flags)
+      if value then
+        if eventType == 'keyDown' then
+          keymap_key[key] = value[4]
+        end
+        return true, {hs.eventtap.event.newKeyEvent(value[3], value[4], eventType == 'keyDown')}
       end
     end
 
-    value = is_match(keymap, md_flag, key, flags)
-    if value then
-      return true, {hs.eventtap.event.newKeyEvent(value[3], value[4], eventType == 'keyDown')}
+    if one_key_md[key] then
+      for idx, md in pairs(one_key_md[key]) do
+        md_flag[md] = true
+      end
+    elseif autorepeat or eventType == 'keyUp' then
+      return false
     end
 
     value = is_contain(one_key, md_flag, key, flags)
     if value then
-      one_key_md = value[1]
       for idx, md in pairs(value[1]) do
         md_flag[md] = false
       end
       if md_flag['r_ctrl'] or md_flag['l_ctrl'] then
         md_flag['ctrl'] = true
       end
-      if eventType == 'keyUp' then
-        one_key_md = nil
+      if eventType == 'keyDown' then
+        one_key_md[key] = value[1]
+      else
+        one_key_md[key] = false
       end
       return true, {key_event(md_flag, value[3], eventType == 'keyDown')}
     end
