@@ -287,7 +287,7 @@ event = hs.eventtap.new({ en_type.flagsChanged, en_type.otherMouseDown, en_type.
   if eventType == 'keyDown' or eventType == 'keyUp' then
     if event:getKeyCode() == 110 then
       -- return false
-      return true, {hs.eventtap.event.newKeyEvent('alt', eventType == 'keyDown')}
+      return true, {event:setKeyCode(hs.keycodes.map['\\'])}
     end
     
     flags = event:getRawEventData().NSEventData.modifierFlags
@@ -328,7 +328,6 @@ event = hs.eventtap.new({ en_type.flagsChanged, en_type.otherMouseDown, en_type.
     elseif autorepeat or eventType == 'keyUp' then
       return false
     end
-
     value = is_contain(one_key, md_flag, key, flags)
     if value then
       for idx, md in pairs(value[1]) do
