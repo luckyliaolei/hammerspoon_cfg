@@ -302,22 +302,19 @@ event = hs.eventtap.new({ en_type.flagsChanged, en_type.otherMouseDown, en_type.
     end
 
     if keymap_key[key] then
-      local last_map_key = keymap_key[key]
+      local last_map_event = keymap_key[key]
       if eventType == 'keyUp' then
         keymap_key[key] = false
+        return true, {last_map_event:setType(en_type.keyUp)}
+      else
+        return true, {last_map_event}
       end
-      value = is_match(keymap, md_flag, key, flags)
-      if value and value[4] == last_map_key then
-        return true, {hs.eventtap.event.newKeyEvent(value[3], value[4], eventType == 'keyDown')}
-      end
-      return true, {event:setKeyCode(hs.keycodes.map[last_map_key])}
     elseif not autorepeat and eventType == 'keyDown' then
       value = is_match(keymap, md_flag, key, flags)
       if value then
-        if eventType == 'keyDown' then
-          keymap_key[key] = value[4]
-        end
-        return true, {hs.eventtap.event.newKeyEvent(value[3], value[4], eventType == 'keyDown')}
+        local map_event = hs.eventtap.event.newKeyEvent(value[3], value[4], true)
+        keymap_key[key] = map_event
+        return true, {map_event}
       end
     end
 
