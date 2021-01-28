@@ -112,6 +112,7 @@ keymap = {
   {{'fn'}, 'forwarddelete', {'cmd'}, 'delete'},
 
   {{'r_ctrl'}, 'm', {'cmd'}, 'delete'},
+  {{'r_ctrl'}, '/', {'cmd', 'ctrl'}, 'd'},
 
   {{'r_ctrl', 'cmd'}, 'i', {'cmd', 'ctrl'}, 'i'},
   {{'r_ctrl', 'cmd'}, 'o', {'cmd', 'ctrl'}, 'o'},
@@ -148,7 +149,7 @@ one_key = {
 }
 
 pad = {
-  ['spce'] = {{}, '0'},
+  ['space'] = {{}, '0'},
   ['n'] = {{}, '1'},
   ['m'] = {{}, '2'},
   [','] = {{}, '3'},
@@ -249,19 +250,17 @@ event = hs.eventtap.new({ en_type.flagsChanged, en_type.otherMouseDown, en_type.
     end
   end
 
-  if eventType == 'rightMouseDown' then
-    if event:getFlags()['ctrl'] then
-      return false
-    end
-    return true
-  end
-  if eventType == 'rightMouseUp' then
-    if event:getFlags()['ctrl'] then
-      return false
-    end
-    hs.eventtap.keyStroke({'cmd', 'ctrl'}, 'd', 100000)
-    return true
-  end
+  -- if eventType == 'rightMouseDown' then
+  --   if event:getFlags()['ctrl'] then
+  --     return true
+  --   end
+  -- end
+  -- if eventType == 'rightMouseUp' then
+  --   if event:getFlags()['ctrl'] then
+  --     hs.eventtap.keyStroke({'cmd', 'ctrl'}, 'd', 100000)
+  --     return true
+  --   end
+  -- end
 
   if eventType == 'otherMouseDown' then
     local button_num = event:getRawEventData().NSEventData.buttonNumber
