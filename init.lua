@@ -120,8 +120,6 @@ keymap = {
   {{'r_ctrl'}, 'o', {'cmd', 'shift'}, ']'},
   {{'r_ctrl'}, 'p', {'cmd'}, 'w'},
 
-  {{'r_ctrl', 'cmd'}, 'k', {'cmd'}, 'up'},
-  {{'r_ctrl', 'cmd'}, ',', {'cmd'}, 'down'},
   {{'r_ctrl'}, '9', {'cmd'}, 'c'},
   {{'r_ctrl'}, '0', {'cmd'}, 'v'},
   {{'fn'}, 'f9', {'cmd'}, 'c'},
