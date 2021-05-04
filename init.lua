@@ -123,8 +123,7 @@ keymap = {
   {{'r_ctrl'}, '9', {'cmd'}, 'c'},
   {{'r_ctrl'}, '0', {'cmd'}, 'v'},
   {{'fn'}, 'f9', {'cmd'}, 'c'},
-  {{'fn'}, 'f10', {'cmd'}, 'v'},
-  {{'cmd'}, ';', {}, '='},
+  {{'fn'}, 'f10', {'cmd'}, 'v'}
 }
 
 one_key = {
@@ -281,10 +280,10 @@ event = hs.eventtap.new({ en_type.flagsChanged, en_type.otherMouseDown, en_type.
   end
 
   if eventType == 'keyDown' or eventType == 'keyUp' then
-    if event:getKeyCode() == 110 then
-      -- return false
-      return true, {event:setKeyCode(hs.keycodes.map['\\'])}
-    end
+    -- if event:getKeyCode() == 110 then
+    --   -- return false
+    --   return true, {event:setKeyCode(hs.keycodes.map['\\'])}
+    -- end
     
     flags = event:getRawEventData().NSEventData.modifierFlags
     md_flag = ctrl_k(event:getFlags(), flags)
